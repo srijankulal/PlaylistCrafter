@@ -29,7 +29,7 @@ sp = Spotify(auth_manager=sp_oauth)
 @app.route('/')
 #simple html for user to promot 
 def home():
-    return render_template('home.html')
+    return render_template('./Templates/home.html')
 
 
 @app.route('/auth')
@@ -43,11 +43,11 @@ def auth():
 
 @app.route('/songSync')
 def similar():
-    return render_template('./SongSync/songSync.html')
+    return render_template('./Templates/SongSync/songSync.html')
 
 @app.route('/moodSync')
 def mood():
-    return render_template('./MoodSync/mood.html')
+    return render_template('./Templates/MoodSync/mood.html')
 
 @app.route('/auth_similarLogin')
 def similarLogin():
