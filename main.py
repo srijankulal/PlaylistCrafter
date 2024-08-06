@@ -22,7 +22,7 @@ sp_oauth=SpotifyOAuth(
     redirect_uri=redirect_url,
     scope=scope,
     cache_handler=cache_handler,
-    show_dialog=True #debugg
+    show_dialog=True #debugg    git commit -m "Initial commit"
 )
 sp = Spotify(auth_manager=sp_oauth)
 
@@ -163,5 +163,5 @@ def logout():
     return redirect(url_for('similar'))
 
 
-if __name__=='__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
