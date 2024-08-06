@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spotify Playlist Creator</title>
+    <style>
+      .svg-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -1; /* Ensure it is behind other content */
+        overflow: hidden;
+        background-color: #333333; /* Change this to your desired color */
+      }
+
+      h1 {
+        margin-top: 10vh;
+        text-align: center; /* Center the heading */
+        font-family: "Arial", sans-serif; /* Choose a modern font */
+      }
+
+      h1 span {
+        display: inline-block;
+        font-size: 3em; /* Increase the font size for better impact */
+        letter-spacing: 0.05em; /* Slightly increase letter spacing */
+        color: #333333; /* Dark text color for contrast */
+        font-weight: 700; /* Bold font for emphasis */
+        padding: 10px 15px; /* Add padding to create a box effect */
+        background-color: #e0f7fa; /* Light cyan background for the 'keys' */
+        border-radius: 5px; /* Slightly round the corners */
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3); /* Shadow to add depth */
+        margin: 0 3px; /* Spacing between 'keys' */
+        transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
+      }
+
+      /* Alternate background colors for 'black keys' */
+      h1 span:nth-child(odd) {
+        background-color: #80deea; /* Medium cyan for 'black keys' */
+        color: #ffffff; /* White text for contrast */
+      }
+
+      h1 span:hover {
+        transform: translateY(-5px); /* Lift the key on hover */
+        background-color: #4dd0e1; /* Slight color change on hover */
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5); /* Darker shadow on hover */
+      }
+
+      /* Keyframes for breathing animation */
+      @keyframes breathing {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      /* Keyframes for sliding animation */
+      @keyframes slideIn {
+        0% {
+          transform: translateY(100%);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      /* Add delay to each span for a staggered effect */
+      .fade-up {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+      }
+      /* Style for the form */
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2vh;
+      }
+
+      /* Style for the input field */
+      #song_search {
+        font-size: 1.5em;
+        width: 60%;
+        max-width: 600px;
+        padding: 15px;
+        border: none;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: background 0.3s ease;
+      }
+
+      /* Hover effect for the input field */
+      #song_search:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Style for the suggestions list */
+      #suggestions {
+        list-style-type: none;
+        padding: 50px;
+        width: 70%;
+        max-width: 700px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two columns */
+        gap: 8px; /* Space between columns */
+      }
+
+      #suggestions li {
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        transition: background 0.3s ease;
+      }
+
+      #suggestions li:hover {
+        background: rgba(255, 255, 255, 0.4);
+      }
+      /* pop for to select after playlist is created*/
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+      }
+
+      .modal-content {
+        background-color: rgba(0, 187, 249, 0.8);
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 40%; /* Could be more or less, depending on screen size */
+        border-radius: 20px;
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .modal-button {
+        background-color: #4caf50; /* Match your page's color scheme */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+
+      .modal-button:hover {
+        background-color: #45a049; /* Darker shade for hover effect */
+      }
+
+      /* Style for the submit button */
+      input[type="submit"] {
+        font-size: 1.5em;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background: #ff4081;
+        color: #ffffff;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Hover effect for the submit button */
+      input[type="submit"]:hover {
+        background: #e6397e;
+      }
+
+      /* Responsive design for smaller screens */
+      @media (max-width: 768px) {
+        #song_search {
+          width: 80%;
+        }
+      }
+      .music-note {
+        position: absolute;
+        font-size: 24px;
+        color: #ff4081; /* Pink */
+        animation: flyUp 1s ease-out forwards;
+        pointer-events: none; /* Make sure notes don't interfere with other interactions */
+      }
+
+      @keyframes flyUp {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-100px);
+        }
+      }
+      /* Styling for Connect to Spotify Button */
+      .spotify-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: black; /* Spotify Green */
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: none;
+      }
+
+      .spotify-button:hover {
+        background-color: #1ed760; /* Lighter green for hover effect */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .spotify-logo {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+      }
+
+      /* Styling for Profile Info Section */
+      .profile-info {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; /* Align items to the right */
+        gap: 15px; /* Spacing between elements */
+        width: 100%; /* Full width for alignment */
+      }
+
+      /* Styling for Profile Picture */
+      .profile-pic {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
+        border: 2px solid #fff; /* White border for separation */
+        transition: transform 0.3s ease;
+        object-fit: cover;
+      }
+
+      .profile-pic:hover {
+        transform: scale(1.05); /* Slightly enlarge on hover */
+      }
+
+      /* Styling for Logout Button */
+      .logout-button {
+        background-color: red; /* Red shade for logout */
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: none;
+      }
+
+      .logout-button:hover {
+        background-color: #ff4569; /* Slightly lighter red for hover */
+        transform: translateY(-2px); /* Lift effect */
+      }
+
+      /* Container for the back button */
+      .back-button-container {
+        position: absolute; /* Ensure it doesn't interfere with other elements */
+        top: 20px; /* Adjust position as needed */
+        left: 20px; /* Adjust position as needed */
+        z-index: 10; /* Make sure it stays on top */
+      }
+
+      /* Styling for Back to Main Page Button */
+      .back-button {
+        display: inline-block;
+        background-color: #1db954; /* Spotify Green */
+        color: #fff; /* White text for contrast */
+        font-weight: bold;
+        font-size: 16px;
+        padding: 12px 24px;
+        border-radius: 30px; /* Rounded corners */
+        text-decoration: none;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+        border: none;
+      }
+
+      /* Hover effect for the back button */
+      .back-button:hover {
+        background-color: #1ed760; /* Lighter green for hover */
+        transform: translateY(-2px); /* Slight lift on hover */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+      }
+
+      .flashes {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        z-index: 9999; /* Ensure it's on top */
+        width: 80%;
+        max-width: 600px; /* Adjust the max-width as needed */
+      }
+
+      .flashes ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .flashes li {
+        color: #d9534f; /* Red color for error messages */
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .flashes button {
+        background-color: #ff4081; /* Match your page's color scheme */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+
+      .flashes button:hover {
+        background-color: #e6397e; /* Darker shade for hover effect */
+      }
+
+      .flashes .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #333;
+      }
+
+      .flashes .close-button:hover {
+        color: #ff4081;
+      }
+    </style>
+  </head>
+  <body>
+    <svg
+      class="svg-background"
+      preserveAspectRatio="xMidYMid slice"
+      viewBox="10 10 80 80"
+    >
+      <defs>
+        <style>
+          @keyframes rotate {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+          .out-top {
+            animation: rotate 20s linear infinite;
+            transform-origin: 13px 25px;
+          }
+          .in-top {
+            animation: rotate 10s linear infinite;
+            transform-origin: 13px 25px;
+          }
+          .out-bottom {
+            animation: rotate 25s linear infinite;
+            transform-origin: 84px 93px;
+          }
+          .in-bottom {
+            animation: rotate 15s linear infinite;
+            transform-origin: 84px 93px;
+          }
+        </style>
+      </defs>
+      <path
+        fill="#9b5de5"
+        class="out-top"
+        d="M37-5C25.1-14.7,5.7-19.1-9.2-10-28.5,1.8-32.7,31.1-19.8,49c15.5,21.5,52.6,22,67.2,2.3C59.4,35,53.7,8.5,37-5Z"
+      />
+      <path
+        fill="#f15bb5"
+        class="in-top"
+        d="M20.6,4.1C11.6,1.5-1.9,2.5-8,11.2-16.3,23.1-8.2,45.6,7.4,50S42.1,38.9,41,24.5C40.2,14.1,29.4,6.6,20.6,4.1Z"
+      />
+      <path
+        fill="#00bbf9"
+        class="out-bottom"
+        d="M105.9,48.6c-12.4-8.2-29.3-4.8-39.4.8-23.4,12.8-37.7,51.9-19.1,74.1s63.9,15.3,76-5.6c7.6-13.3,1.8-31.1-2.3-43.8C117.6,63.3,114.7,54.3,105.9,48.6Z"
+      />
+      <path
+        fill="#00f5d4"
+        class="in-bottom"
+        d="M102,67.1c-9.6-6.1-22-3.1-29.5,2-15.4,10.7-19.6,37.5-7.6,47.8s35.9,3.9,44.5-12.5C115.5,92.6,113.9,74.6,102,67.1Z"
+      />
+    </svg>
+    <section class="login">
+      <nav>
+        <div class="profile-info">
+          {% if session['token_info'] %}
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              fetch(`/profile_pic`)
+                .then((response) => response.json())
+                .then((data) => {
+                  const profilePicElement = document.getElementById(
+                    "profile_picture_url"
+                  );
+                  profilePicElement.src = data.profile_picture_url;
+                });
+            });
+          </script>
+          <img
+            id="profile_picture_url"
+            src=""
+            alt="Profile Picture"
+            class="profile-pic"
+          />
+          <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+          {% else %}
+          <a href="{{ url_for('login') }}" class="spotify-button">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"
+              alt="Spotify Logo"
+              class="spotify-logo"
+            />
+            Connect to Spotify
+          </a>
+          {% endif %}
+        </div>
+      </nav>
+    </section>
+
+    <div class="back-button-container">
+      <a href="/" class="back-button">Home</a>
+    </div>
+
+    <section class="section section1">
+      <div class="h1_div">
+        <h1 id="heading">
+          <span id="s">S</span>
+          <span id="o">o</span>
+          <span id="n">n</span>
+          <span id="g">g</span>
+
+          <span id="S">S</span>
+          <span id="y">y</span>
+          <span id="N">n</span>
+          <span id="c">c</span>
+        </h1>
+      </div>
+    </section>
+    <form
+      id="song_form"
+      onsubmit="event.preventDefault(); callcreate_playlist();"
+    >
+      <input
+        type="text"
+        id="song_search"
+        name="song_name"
+        placeholder="Type a song name..."
+        aria-label="Song Search"
+        autocomplete="off"
+      />
+      <!-- Added to prevent browser's default autocomplete -->
+      <ul id="suggestions" style="list-style-type: none; padding: 0"></ul>
+      <input type="submit" value="Create Playlist" />
+      <!-- <input type="submit" value="Logout"/> -->
+    </form>
+
+    <div id="playlistCreatedModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Playlist Created Successfully!</h2>
+        <p>What would you like to do next?</p>
+        <button id="goToSpotifyBtn" class="modal-button">Go to Spotify</button>
+        <button id="continueBtn" class="modal-button">Continue</button>
+      </div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="flashes">
+      <button class="close-button">&times;</button>
+      <ul>
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      <button id="tryAgainBtn">Try Again</button>
+    </div>
+    {% endif %} {% endwith %}
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document
+          .getElementById("song_search")
+          .addEventListener("input", function () {
+            const inputValue = this.value;
+            if (inputValue.length > 0) {
+              // Fetch suggestions for queries longer than 2 characters
+              fetch(`/autocomplete?song_name=${encodeURIComponent(inputValue)}`)
+                .then((response) => response.json())
+                .then((suggestions) => {
+                  const suggestionsList =
+                    document.getElementById("suggestions");
+                  suggestionsList.innerHTML = ""; // Clear existing suggestions
+                  suggestions.forEach((suggestion) => {
+                    const li = document.createElement("li");
+                    li.style.cursor = "pointer";
+                    li.innerHTML = `
+                            <div style="display: flex; align-items: center;">
+                                <img src="${suggestion.cover_image}" alt="Cover Image" style="width: 50px; height: 50px; margin-right: 10px;">
+                                <div>
+                                    <div><strong>${suggestion.name}</strong></div>
+                                    <div>${suggestion.artist}</div>
+                                </div>
+                            </div>
+                        `;
+                    li.addEventListener("click", () => {
+                      document.getElementById("song_search").value =
+                        suggestion.name;
+                      suggestionsList.innerHTML = ""; // Clear suggestions after selection
+                    });
+                    suggestionsList.appendChild(li);
+                  });
+                });
+            } else {
+              document.getElementById("suggestions").innerHTML = ""; // Clear suggestions if input is cleared
+            }
+          });
+        const s = document.getElementById("s");
+        const o = document.getElementById("o");
+        const n = document.getElementById("n");
+        const g = document.getElementById("g");
+        const S = document.getElementById("S");
+        const y = document.getElementById("y");
+        const N = document.getElementById("N");
+        const c = document.getElementById("c");
+        function addMusicNoteAnimation(element) {
+          element.addEventListener("mouseenter", function (e) {
+            const notes = ["♪", "♫"];
+            for (let i = 0; i < 10; i++) {
+              const note = document.createElement("div");
+              note.className = "music-note";
+
+              note.innerHTML = notes[Math.floor(Math.random() * notes.length)];
+              note.style.left = `${e.clientX}px`;
+              note.style.top = `${e.clientY}px`;
+              document.body.appendChild(note);
+              setTimeout(() => note.remove(), 1000); // Adjust duration as needed
+            }
+          });
+        }
+        // Apply the animation to all relevant spans
+        [s, o, n, g, S, y, N, c].forEach(addMusicNoteAnimation);
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get the modals
+
+        var playlistCreatedModal = document.getElementById(
+          "playlistCreatedModal"
+        );
+
+        // Get the buttons that open the modal
+        var goToSpotifyBtn = document.getElementById("goToSpotifyBtn");
+        var continueBtn = document.getElementById("continueBtn");
+
+        // Get the <span> elements that close the modals
+        var closeButtons = document.querySelectorAll(".close");
+
+        // When the user clicks on <span> (x), close the modal
+        closeButtons.forEach(function (closeButton) {
+          closeButton.onclick = function () {
+            playlistCreatedModal.style.display = "none";
+          };
+        });
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+          if (event.target == playlistCreatedModal) {
+            playlistCreatedModal.style.display = "none";
+          }
+        };
+
+        // When the user clicks on the "Continue" button, close the modal
+        continueBtn.onclick = function () {
+          playlistCreatedModal.style.display = "none";
+        };
+        // Show the confirmation modal when the form is submitted
+      });
+
+      function callcreate_playlist() {
+        fetch("/create_playlist", {
+          method: "POST",
+          body: new FormData(document.getElementById("song_form")),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.playlist_url) {
+              playlistUrl = data.playlist_url;
+              // Show the modal or any other UI update
+              document.getElementById("playlistCreatedModal").style.display =
+                "block";
+            } else {
+              console.error("Error creating playlist: " + data.error);
+            }
+          })
+          .catch((error) => console.error(error));
+      }
+      document.getElementById("goToSpotifyBtn").onclick = function () {
+        if (playlistUrl) {
+          window.open(playlistUrl);
+        } else {
+          console.error("Playlist URL is not set.");
+        }
+      };
+
+      heading.addEventListener("mouseleave", function () {
+        heading
+          .querySelectorAll(".music-note")
+          .forEach((note) => note.remove());
+      });
+      document
+        .querySelector(".close-button")
+        .addEventListener("click", function () {
+          document.querySelector(".flashes").style.display = "none";
+        });
+
+      document
+        .getElementById("tryAgainBtn")
+        .addEventListener("click", function () {
+          window.location.href = "/login";
+          // Add logic here to retry the action (e.g., reload the page or show the form again)
+        });
+    </script>
+  </body>
+</html>
