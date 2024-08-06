@@ -13,7 +13,7 @@ app.config["SECRET_KEY"]=os.getenv("Secret_key")
 
 client_id=os.getenv("Client_ID")
 client_secret=os.getenv("Client_SECRET")
-redirect_url="https://spotify-playlist-maker-912s.onrender.com/"
+redirect_url="https://spotify-playlist-maker-912s.onrender.com"
 scope = 'user-read-recently-played user-top-read user-library-read playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email'
 
 cache_handler = FlaskSessionCacheHandler(session)#to store the token in flask
