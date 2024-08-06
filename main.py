@@ -22,14 +22,15 @@ sp_oauth=SpotifyOAuth(
     redirect_uri=redirect_url,
     scope=scope,
     cache_handler=cache_handler,
-    show_dialog=True #debugg    git commit -m "Initial commit"
+    show_dialog=False #debugg    git commit -m "Initial commit"
 )
 sp = Spotify(auth_manager=sp_oauth)
 
 @app.route('/')
 #simple html for user to promot 
 def home():
-    return render_template('./Templates/home.html')
+    return render_template('home.html')
+
 
 
 @app.route('/auth')
@@ -43,11 +44,11 @@ def auth():
 
 @app.route('/songSync')
 def similar():
-    return render_template('./Templates/SongSync/songSync.html')
+    return render_template('./SongSync/songSync.html')
 
 @app.route('/moodSync')
 def mood():
-    return render_template('./Templates/MoodSync/mood.html')
+    return render_template('./MoodSync/mood.html')
 
 @app.route('/auth_similarLogin')
 def similarLogin():
@@ -130,7 +131,7 @@ def callback():
 #     playlist_html = '<br>'.join([f'{name}: {url}' for name, url in playlist_info])
     
 #     return playlist_html
-@app.route('/login', methods=['GET'])
+@app.route('/login')
 def login():
     session['auth_route'] = 'similarLogin'
     if not sp_oauth.validate_token(cache_handler.get_cached_token()):
@@ -164,4 +165,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app = Flask(__name__, template_folder='path/to/your/templates')
