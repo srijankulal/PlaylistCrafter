@@ -7,7 +7,8 @@ from spotipy.cache_handler import FlaskSessionCacheHandler
 from dotenv import load_dotenv
 
 load_dotenv()
-app= Flask(__name__)
+app=Flask(__name__,template_folder='Templates')
+
 app.config["SECRET_KEY"]=os.getenv("Secret_key")
 
 client_id=os.getenv("Client_ID")
@@ -164,5 +165,5 @@ def logout():
     return redirect(url_for('similar'))
 
 
-if __name__ == "__main__":
-    app = Flask(__name__, template_folder='path/to/your/templates')
+if __name__=="__main__":
+    app.run(debug=True)
