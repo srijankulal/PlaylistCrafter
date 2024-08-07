@@ -13,7 +13,7 @@ app.config["SECRET_KEY"]=os.getenv("Secret_key")
 
 client_id=os.getenv("Client_ID")
 client_secret=os.getenv("Client_SECRET")
-redirect_url="https://spotify-playlist-maker-912s.onrender.com"
+redirect_url="http://spotify-playlist-maker-912s.onrender.com/callback"
 scope = 'user-read-recently-played user-top-read user-library-read playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email'
 
 cache_handler = FlaskSessionCacheHandler(session)#to store the token in flask
@@ -109,16 +109,17 @@ def callback():
         else:
             flash(f"Authorization failed: {error}", "error")
         return redirect("/songSync")
+
+    code = request.args.get('code')
+    if not code:
+        return  redirect(url_for("home"))
+
+    sp_oauth.get_access_token(code)
+    session['logged_in'] = True
+    if session.get('auth_route') == 'similarLogin':
+        return redirect(url_for("similar"))
     else:
-        code = request.args.get('code')
-        if not code:
-            return  redirect(url_for("home"))
-        sp_oauth.get_access_token(code)
-        session['logged_in'] = True
-        if session.get('auth_route') == 'similarLogin':
-            return redirect(url_for("similar"))
-        else:
-            return redirect(url_for("home"))
+        return redirect(url_for("home"))
 
 # @app.route('/get_playlist')
 # def get_playlist():
@@ -134,10 +135,16 @@ def callback():
 @app.route('/login')
 def login():
     session['auth_route'] = 'similarLogin'
-    token_info = cache_handler.get_cached_token()
-    if not sp_oauth.validate_token(token_info):
+    if not sp_oauth.validate_token(cache_handler.get_cached_token()):
         auth_url = sp_oauth.get_authorize_url()
         return redirect(auth_url)
+
+    # user_profile = sp.current_user()
+    # profile_picture_url = user_profile.get('images', [{}])[0].get('url', None)
+    # session['profile_pic_url'] = profile_picture_url
+    # print(session['profile_pic_url'])
+    
+
     return redirect(url_for('similar'))
 
 @app.route('/profile_pic')
