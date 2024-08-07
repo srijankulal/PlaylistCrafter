@@ -109,17 +109,16 @@ def callback():
         else:
             flash(f"Authorization failed: {error}", "error")
         return redirect("/songSync")
-
-    code = request.args.get('code')
-    if not code:
-        return  redirect(url_for("home"))
-
-    sp_oauth.get_access_token(code)
-    session['logged_in'] = True
-    if session.get('auth_route') == 'similarLogin':
-        return redirect(url_for("similar"))
     else:
-        return redirect(url_for("home"))
+        code = request.args.get('code')
+        if not code:
+            return  redirect(url_for("home"))
+        sp_oauth.get_access_token(code)
+        session['logged_in'] = True
+        if session.get('auth_route') == 'similarLogin':
+            return redirect(url_for("similar"))
+        else:
+            return redirect(url_for("home"))
 
 # @app.route('/get_playlist')
 # def get_playlist():
