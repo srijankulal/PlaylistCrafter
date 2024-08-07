@@ -134,16 +134,10 @@ def callback():
 @app.route('/login')
 def login():
     session['auth_route'] = 'similarLogin'
-    if not sp_oauth.validate_token(cache_handler.get_cached_token()):
+    token_info = cache_handler.get_cached_token()
+    if not sp_oauth.validate_token(token_info):
         auth_url = sp_oauth.get_authorize_url()
         return redirect(auth_url)
-
-    # user_profile = sp.current_user()
-    # profile_picture_url = user_profile.get('images', [{}])[0].get('url', None)
-    # session['profile_pic_url'] = profile_picture_url
-    # print(session['profile_pic_url'])
-    
-
     return redirect(url_for('similar'))
 
 @app.route('/profile_pic')
