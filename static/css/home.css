@@ -38,7 +38,7 @@
       header nav a:hover {
         color: #81d4fa; /* Light Blue */
       }
-
+      
       h1 span {
         display: inline-block;
         font-size: 4em;
@@ -60,7 +60,7 @@
         margin: 0;
         padding: 0;
         animation: colorChange 5s infinite, bounce 2s infinite;
-        font-family: 'Comic Sans MS', cursive, sans-serif;
+        font-family: 'Poppins', cursive, sans-serif;
         position: relative;
       }   
       @keyframes colorChange {
