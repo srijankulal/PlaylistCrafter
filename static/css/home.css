@@ -51,6 +51,7 @@
           /* Teal */ #2a9d8f /* Dark Teal */
         );
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
         -webkit-text-stroke: 1px #ff4081; /* Pink text stroke */
         font-weight: 600;
