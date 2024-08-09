@@ -156,29 +156,44 @@
           });
         }
       
-        // Create an Intersection Observer
-        const observer = new IntersectionObserver(handleScroll, {
-          threshold: 0.5,
-        });
-      
-        // Observe each section
-        sections.forEach((section) => {
-          observer.observe(section);
-        });
-      
-        // Handle music note effect on hover over heading
-        heading.addEventListener("mouseenter", (e) => {
-          const note = document.createElement("div");
-          note.className = "music-note";
-          note.innerHTML = "&#9835;";
-          note.style.left = `${e.clientX}px`;
-          note.style.top = `${e.clientY}px`;
-          document.body.appendChild(note);
-      
-          note.addEventListener("animationend", () => {
-            note.remove();
-          });
-        });
+        let noteCounter = 0;
+  const maxNotes = 10; // Maximum number of notes allowed
+  let canSpawnNote = true; // Flag to control spawn rate
+  const spawnCooldown = 200; // Cooldown period in milliseconds
+
+  // Create an Intersection Observer
+  const observer = new IntersectionObserver(handleScroll, {
+    threshold: 0.5,
+  });
+
+  // Observe each section
+  sections.forEach((section) => {
+    observer.observe(section);
+  });
+
+  // Handle music note effect on hover over heading
+  heading.addEventListener("mouseenter", (e) => {
+    if (noteCounter < maxNotes && canSpawnNote) {
+      const note = document.createElement("div");
+      note.className = "music-note";
+      note.innerHTML = "&#9835;";
+      note.style.left = `${e.clientX}px`;
+      note.style.top = `${e.clientY}px`;
+      document.body.appendChild(note);
+      noteCounter++;
+      canSpawnNote = false; // Prevent new notes from spawning immediately
+
+      // Re-enable spawning after the cooldown period
+      setTimeout(() => {
+        canSpawnNote = true;
+      }, spawnCooldown);
+
+      note.addEventListener("animationend", () => {
+        note.remove();
+        noteCounter--;
+      });
+    }
+  });
       
         // Smooth scrolling to the next section on scroll
         window.addEventListener("wheel", (e) => {
