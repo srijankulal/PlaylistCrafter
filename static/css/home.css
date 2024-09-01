@@ -141,6 +141,10 @@
         justify-content: center;
         z-index: 1;
       }
+a.button {
+    margin: 40px;
+
+}
 
       .section .button::after {
         content: "\f001";
