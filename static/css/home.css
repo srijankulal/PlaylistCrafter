@@ -131,6 +131,8 @@
         cursor: pointer;
         border-radius: 5px;
         text-decoration: none;
+        margin: 40px;
+        padding: 30px;/*edit*/
         transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
         position: relative;
         overflow: hidden;
