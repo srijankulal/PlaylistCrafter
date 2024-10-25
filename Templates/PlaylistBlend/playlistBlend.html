@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mood-Based Playlist Recommendation</title>
+    <link rel="stylesheet" href="/static/css/mood.css" />
+  </head>
+  <body>
+    <svg
+      class="svg-background"
+      preserveAspectRatio="xMidYMid slice"
+      viewBox="10 10 80 80"
+    >
+      <defs>
+        <style>
+          @keyframes rotate {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+          .out-top {
+            animation: rotate 20s linear infinite;
+            transform-origin: 13px 25px;
+          }
+          .in-top {
+            animation: rotate 10s linear infinite;
+            transform-origin: 13px 25px;
+          }
+          .out-bottom {
+            animation: rotate 25s linear infinite;
+            transform-origin: 84px 93px;
+          }
+          .in-bottom {
+            animation: rotate 15s linear infinite;
+            transform-origin: 84px 93px;
+          }
+        </style>
+      </defs>
+      <path
+        fill="#9b5de5"
+        class="out-top"
+        d="M37-5C25.1-14.7,5.7-19.1-9.2-10-28.5,1.8-32.7,31.1-19.8,49c15.5,21.5,52.6,22,67.2,2.3C59.4,35,53.7,8.5,37-5Z"
+      />
+      <path
+        fill="#f15bb5"
+        class="in-top"
+        d="M20.6,4.1C11.6,1.5-1.9,2.5-8,11.2-16.3,23.1-8.2,45.6,7.4,50S42.1,38.9,41,24.5C40.2,14.1,29.4,6.6,20.6,4.1Z"
+      />
+      <path
+        fill="#00bbf9"
+        class="out-bottom"
+        d="M105.9,48.6c-12.4-8.2-29.3-4.8-39.4.8-23.4,12.8-37.7,51.9-19.1,74.1s63.9,15.3,76-5.6c7.6-13.3,1.8-31.1-2.3-43.8C117.6,63.3,114.7,54.3,105.9,48.6Z"
+      />
+      <path
+        fill="#00f5d4"
+        class="in-bottom"
+        d="M102,67.1c-9.6-6.1-22-3.1-29.5,2-15.4,10.7-19.6,37.5-7.6,47.8s35.9,3.9,44.5-12.5C115.5,92.6,113.9,74.6,102,67.1Z"
+      />
+    </svg>
+    <section class="login">
+      <nav>
+        <div class="profile-info">
+          {% if session['token_info'] %}
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              fetch(`/profile_pic`)
+                .then((response) => response.json())
+                .then((data) => {
+                  const profilePicElement = document.getElementById(
+                    "profile_picture_url"
+                  );
+                  if (data.profile_picture_url == "None") {
+                    profilePicElement.src = "/static/Images/profile.png";
+                  } else {
+                    profilePicElement.src = data.profile_picture_url;
+                  }
+                });
+            });
+          </script>
+          <img
+            id="profile_picture_url"
+            src=""
+            alt="Profile Picture"
+            class="profile-pic"
+          />
+          <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+          {% else %}
+          <a href="{{ url_for('login') }}" class="spotify-button">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"
+              alt="Spotify Logo"
+              class="spotify-logo"
+            />
+            Connect to Spotify
+          </a>
+          {% endif %}
+        </div>
+      </nav>
+    </section>
+
+    <div class="back-button-container">
+      <a href="/" class="back-button">Home</a>
+    </div>
+    <h1>Playlist Blend</h1>
+    <form method="POST" action="/playlistBlend">
+      {% if session['logged_in']== True %}
+      <label for="playlist1">Select First Playlist:</label>
+      <select name="playlist1" id="playlist1" onchange="filterSecondPlaylist()">
+        <option value="">--Select First Playlist--</option>
+        {% for playlist in playlists %}
+        <option value="{{ playlist.id }}">{{ playlist.name }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="playlist2">Select Second Playlist:</label>
+      <select name="playlist2" id="playlist2">
+        <option value="">--Select Second Playlist--</option>
+        {% for playlist in playlists2 %}
+        <option value="{{ playlist.id }}">{{ playlist.name }}</option>
+        {% endfor %}
+      </select>
+      {% else %}
+      <p>Please login to Spotify to access this feature.</p>
+      {% endif %}
+    </form>
+
+    <script>
+      function filterSecondPlaylist() {
+        // Get the selected playlist from the first dropdown
+        const selectedPlaylist1 = document.getElementById("playlist1").value;
+
+        // Get the second dropdown options
+        const playlist2 = document.getElementById("playlist2");
+        const options = playlist2.getElementsByTagName("option");
+
+        // Iterate over the options and disable the one that matches the first playlist
+        for (let i = 0; i < options.length; i++) {
+          if (options[i].value === selectedPlaylist1) {
+            options[i].disabled = true; // Disable the matching playlist
+          } else {
+            options[i].disabled = false; // Enable other playlists
+          }
+        }
+      }
+    </script>
+    {% if session['logged_in']== True %}
+    <button type="submit">Blend Playlists</button>
+    {% endif %}
+  </body>
+</html>

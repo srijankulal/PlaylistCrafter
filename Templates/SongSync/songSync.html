@@ -73,7 +73,11 @@
                   const profilePicElement = document.getElementById(
                     "profile_picture_url"
                   );
-                  profilePicElement.src = data.profile_picture_url;
+                  if (data.profile_picture_url == "None") {
+                    profilePicElement.src = "/static/Images/profile.png";
+                  } else {
+                    profilePicElement.src = data.profile_picture_url;
+                  }
                 });
             });
           </script>
