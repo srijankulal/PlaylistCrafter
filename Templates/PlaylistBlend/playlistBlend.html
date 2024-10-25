@@ -107,7 +107,11 @@
     </div>
     <h1>Playlist Blend</h1>
     {% if session['token_info'] %}
-    <form method="POST" action="/blend_playlists">
+    <form
+      id="playlist_form"
+      method="POST"
+      onsubmit="event.preventDefault(); callcreate_blend();handleFormSubmit();"
+    >
       <div class="search-container">
         <div class="search-box1">
           <label for="playlist1">Search for First Playlist</label>
@@ -119,6 +123,8 @@
             aria-label="Playlist Search"
             autocomplete="off"
           />
+          <!-- Hidden input to store the selected playlist ID -->
+          <input type="hidden" id="playlistId1" name="playlistId1" />
           <!-- Added to prevent browser's default autocomplete -->
           <ul id="suggestions1" style="list-style-type: none; padding: 0"></ul>
         </div>
@@ -132,6 +138,8 @@
             aria-label="Playlist Search"
             autocomplete="off"
           />
+          <!-- Hidden input to store the selected playlist ID -->
+          <input type="hidden" id="playlistId2" name="playlistId2" />
           <!-- Added to prevent browser's default autocomplete -->
           <ul id="suggestions2" style="list-style-type: none; padding: 0"></ul>
         </div>
@@ -143,6 +151,27 @@
     {% else %}
     <p>Please login to Spotify to access this feature.</p>
     {% endif %}
+    <div id="playlistCreatedModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Playlist Created Successfully!</h2>
+        <p>What would you like to do next?</p>
+        <button id="goToSpotifyBtn" class="modal-button">Go to Spotify</button>
+        <button id="continueBtn" class="modal-button">Continue</button>
+      </div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="flashes">
+      <button class="close-button">&times;</button>
+      <ul>
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      <button id="tryAgainBtn">Try Again</button>
+    </div>
+    {% endif %} {% endwith %}
   </body>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -175,6 +204,9 @@
                   `;
                   li.addEventListener("click", () => {
                     inputElement.value = suggestion.name;
+                    document.getElementById(
+                      `playlistId${inputId.slice(-1)}`
+                    ).value = suggestion.id;
                     suggestionsList.innerHTML = ""; // Clear suggestions after selection
                   });
                   suggestionsList.appendChild(li);
@@ -189,5 +221,84 @@
       setupAutocomplete("playlist_search1", "suggestions1");
       setupAutocomplete("playlist_search2", "suggestions2"); //depending on the number of playlists to be blended, add more setupAutocomplete calls
     });
+    document.addEventListener("DOMContentLoaded", function () {
+      // Get the modals
+      var playlistCreatedModal = document.getElementById(
+        "playlistCreatedModal"
+      );
+
+      // Get the buttons that open the modal
+      var goToSpotifyBtn = document.getElementById("goToSpotifyBtn");
+      var continueBtn = document.getElementById("continueBtn");
+
+      // Get the <span> elements that close the modals
+      var closeButtons = document.querySelectorAll(".close");
+
+      // When the user clicks on <span> (x), close the modal
+      closeButtons.forEach(function (closeButton) {
+        closeButton.onclick = function () {
+          playlistCreatedModal.style.display = "none";
+        };
+      });
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function (event) {
+        if (event.target == playlistCreatedModal) {
+          playlistCreatedModal.style.display = "none";
+        }
+      };
+
+      // When the user clicks on the "Continue" button, close the modal
+      continueBtn.onclick = function () {
+        playlistCreatedModal.style.display = "none";
+      };
+
+      // Show the confirmation modal when the form is submitted
+    });
+    document.getElementById("goToSpotifyBtn").onclick = function () {
+      if (playlistUrl) {
+        window.open(playlistUrl);
+      } else {
+        console.error("Playlist URL is not set.");
+      }
+    };
+    function callcreate_blend() {
+      const playlistIdInput1 = document.getElementById("playlistId1").value;
+      const playlistIdInput2 = document.getElementById("playlistId2").value;
+
+      // Check if song_id is set, otherwise show a message box
+      /*if (!songIdInput) {
+        document.getElementById("SearchEmpty").style.display = "block";
+        return; // Stop the function if no song_id is found
+      }*/
+      fetch("/blend_playlists", {
+        method: "POST",
+        body: new FormData(document.getElementById("playlist_form")),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if(data.playlist_url=="Same"){
+            document.getElementById("playlistCreatedModal").style.display =
+              "block";
+          }
+          else if(data.playlist_url=="no1"){
+            document.getElementById("playlistCreatedModal").style.display =
+              "block";
+          }
+          else if(data.playlist_url=="no2"){
+            document.getElementById("playlistCreatedModal").style.display =
+              "block";
+          }
+          else if (data.playlist_url) {
+            playlistUrl = data.playlist_url;
+            // Show the modal or any other UI update
+            document.getElementById("playlistCreatedModal").style.display =
+              "block";
+          } else
+            console.error("Error creating playlist: " + data.error);
+          }
+        })
+        .catch((error) => console.error(error));
+    }
   </script>
 </html>

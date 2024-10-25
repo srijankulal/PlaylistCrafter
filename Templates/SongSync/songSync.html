@@ -163,6 +163,15 @@
     </div>
     {% endif %} {% endwith %}
 
+    <div id="SearchEmpty" class="modal2">
+      <div class="modal-content2">
+        <span class="close2">&times;</span>
+        <h2>
+          Please search for a song and select it before creating a playlist.
+        </h2>
+        <button id="continueBtn2" class="modal-button">OK</button>
+      </div>
+    </div>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         document
@@ -231,7 +240,6 @@
 
       document.addEventListener("DOMContentLoaded", function () {
         // Get the modals
-
         var playlistCreatedModal = document.getElementById(
           "playlistCreatedModal"
         );
@@ -261,10 +269,49 @@
         continueBtn.onclick = function () {
           playlistCreatedModal.style.display = "none";
         };
+
+        // Show the confirmation modal when the form is submitted
+      });
+      //this is for the modal that shows when the user tries to create a playlist without selecting a song
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get the modals
+        var SearchEmpty = document.getElementById("SearchEmpty");
+
+        // Get the buttons that open the modal
+        var continueBtn = document.getElementById("continueBtn2");
+
+        // Get the <span> elements that close the modals
+        var closeButtons = document.querySelectorAll(".close2");
+
+        // When the user clicks on <span> (x), close the modal
+        closeButtons.forEach(function (closeButton) {
+          closeButton.onclick = function () {
+            SearchEmpty.style.display = "none";
+          };
+        });
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+          if (event.target == SearchEmpty) {
+            SearchEmpty.style.display = "none";
+          }
+        };
+
+        // When the user clicks on the "Continue" button, close the modal
+        continueBtn.onclick = function () {
+          SearchEmpty.style.display = "none";
+        };
         // Show the confirmation modal when the form is submitted
       });
 
       function callcreate_playlist() {
+        const songIdInput = document.getElementById("song_id").value;
+
+        // Check if song_id is set, otherwise show a message box
+        if (!songIdInput) {
+          document.getElementById("SearchEmpty").style.display = "block";
+          return; // Stop the function if no song_id is found
+        }
         fetch("/create_playlist", {
           method: "POST",
           body: new FormData(document.getElementById("song_form")),
@@ -285,25 +332,11 @@
       function handleFormSubmit() {
         const songSearchInput = document.getElementById("song_search");
         const songIdInput = document.getElementById("song_id");
-
-        // Perform your form submission logic here
-
         // Clear the input fields after submission
         songSearchInput.value = "";
         songIdInput.value = "";
       }
-      function validateForm() {
-        const songId = document.getElementById("song_id").value;
-        const songName = document.getElementById("song_name").value;
 
-        // Check if song_id is empty
-        if (!songId) {
-          alert("Please search for a song and select one from the results.");
-          return false; // Prevent form submission
-        }
-
-        return true; // Proceed with form submission if song_id is present
-      }
       document.getElementById("goToSpotifyBtn").onclick = function () {
         if (playlistUrl) {
           window.open(playlistUrl);

@@ -5,6 +5,7 @@ from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import FlaskSessionCacheHandler
 from dotenv import load_dotenv
+import random as rd
 
 load_dotenv()
 app=Flask(__name__,template_folder='Templates')
@@ -155,42 +156,64 @@ def blendLogin():
 @app.route('/blend_playlists', methods=['POST'])#blends the playlist and create a new playlist with the songs of both playlist
 def blend_playlists():
     playlist_id1 = request.form['playlistId1']
+    playlistName1= request.form['playlist_name1']
     playlist_id2 = request.form['playlistId2']
+    playlistName2= request.form['playlist_name2']
     if playlist_id1 and playlist_id2:
-        songsFromPlaylist1=get_all_playlist_tracks(playlist_id1)#results are the id of the songs
-        songsFromPlaylist2=get_all_playlist_tracks(playlist_id2)
-        # print(playlist_id1)
-        # print(playlist_id2)
-        # for list in songsFromPlaylist1:
-        #     print(list['track']['name'])
-        # for list2 in songsFromPlaylist1:
-        #     print(list2['track']['name'])
-        # # store the songs in a text file 
-        # with open('songsFromPlaylist1.txt', 'w') as f:
-        #     for song in songsFromPlaylist1:
-        #         f.write(f"{song['track']['name']} - {song['track']['artists'][0]['name']}\n")
-        # with open('songsFromPlaylist2.txt', 'w') as f:
-        #     for song in songsFromPlaylist2:
-        #         f.write(f"{song['track']['name']} - {song['track']['artists'][0]['name']}\n")
-        
-        
-        # songsFromPlaylist1 = sp.playlist_tracks(playlist_id1)['items']
-        # songsFromPlaylist2 = sp.playlist_tracks(playlist_id2)['items']
-        
-        
-    return
-def get_all_playlist_tracks(playlist_id):
+        if playlist_id1!= playlist_id2:
+            songsFromPlaylist1=get_all_playlist_tracks(playlist_id1)#results are the id of the songs
+            songsFromPlaylist2=get_all_playlist_tracks(playlist_id2)
+            FinalPlaylistIds=createBlend(songsFromPlaylist1,songsFromPlaylist2)
+            user_id = sp.current_user()['id']
+            playlist = sp.user_playlist_create(user_id, f"Blended Playlist", public=True,collaborative=False,description=f"{playlistName1} + {playlistName2}")
+            sp.playlist_add_items(playlist['id'], FinalPlaylistIds)
+            # print(playlist)
+            playlist_url=playlist['external_urls']['spotify']
+            # print(playlist_url)
+            return jsonify({"playlist_url": playlist_url})
+        return jsonify({"playlist_url": "Same"})
+    elif not playlist_id1:
+        return jsonify({"playlist_url": "no1"})
+    elif not playlist_id2:
+        return jsonify({"playlist_url": "no2"})
+    else:
+        return jsonify({"playlist_url": None})
+    
+
+def get_all_playlist_tracks(playlist_id):#this function is used to get all the songs id from the playlist and send only ids
     all_tracks = []
     results = sp.playlist_tracks(playlist_id)
     all_tracks.extend(results['items'])
 
-    while results['next']:
+    while results['next']:#nexr because default limit is 100 so if there are more than 100 songs then we have to use next
         results = sp.next(results)
         all_tracks.extend(results['items'])
-    #return just id of all the songs only
+    #returns just id of all the songs 
     all_tracks = [track['track']['id'] for track in all_tracks]
     return all_tracks
+
+#This function is to create final list of songs 
+def createBlend(songsFromPlaylist1 ,songsFromPlaylist2):
+    list1=songsFromPlaylist1
+    list2=songsFromPlaylist2
     
+    blendLimit=(len(list1)+len(list2))//2
+    finList=list1+list2
+    rd.shuffle(finList)
+    blendList=finList[:blendLimit]
+        # Remove duplicate IDs
+    # Remove duplicate IDs
+    seen = set()
+    unique_blendList = []
+    for song in blendList:
+        if song not in seen:
+            unique_blendList.append(song)
+            seen.add(song)
+    
+    return unique_blendList
+
+
+
 @app.route('/create_playlist', methods=['POST'])
 def create_playlist():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()):# to check if user logined or not 
