@@ -123,7 +123,7 @@
     </section>
     <form
       id="song_form"
-      onsubmit="event.preventDefault(); callcreate_playlist();"
+      onsubmit="event.preventDefault(); callcreate_playlist();handleFormSubmit();"
     >
       <input
         type="text"
@@ -133,6 +133,8 @@
         aria-label="Song Search"
         autocomplete="off"
       />
+      <!-- Hidden input to store the selected song ID -->
+      <input type="hidden" id="song_id" name="song_id" />
       <!-- Added to prevent browser's default autocomplete -->
       <ul id="suggestions" style="list-style-type: none; padding: 0"></ul>
       <input type="submit" value="Create Playlist" />
@@ -190,6 +192,7 @@
                     li.addEventListener("click", () => {
                       document.getElementById("song_search").value =
                         suggestion.name;
+                      document.getElementById("song_id").value = suggestion.id; // Set song ID
                       suggestionsList.innerHTML = ""; // Clear suggestions after selection
                     });
                     suggestionsList.appendChild(li);
@@ -225,6 +228,7 @@
         // Apply the animation to all relevant spans
         [s, o, n, g, S, y, N, c].forEach(addMusicNoteAnimation);
       });
+
       document.addEventListener("DOMContentLoaded", function () {
         // Get the modals
 
@@ -277,6 +281,28 @@
             }
           })
           .catch((error) => console.error(error));
+      }
+      function handleFormSubmit() {
+        const songSearchInput = document.getElementById("song_search");
+        const songIdInput = document.getElementById("song_id");
+
+        // Perform your form submission logic here
+
+        // Clear the input fields after submission
+        songSearchInput.value = "";
+        songIdInput.value = "";
+      }
+      function validateForm() {
+        const songId = document.getElementById("song_id").value;
+        const songName = document.getElementById("song_name").value;
+
+        // Check if song_id is empty
+        if (!songId) {
+          alert("Please search for a song and select one from the results.");
+          return false; // Prevent form submission
+        }
+
+        return true; // Proceed with form submission if song_id is present
       }
       document.getElementById("goToSpotifyBtn").onclick = function () {
         if (playlistUrl) {

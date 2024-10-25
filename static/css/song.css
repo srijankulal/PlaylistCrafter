@@ -195,7 +195,7 @@ input[type="submit"] {
 
 /* Hover effect for the submit button */
 input[type="submit"]:hover {
-  background: #e6397e;
+  background: #d00053;
 }
 
 /* Responsive design for smaller screens */

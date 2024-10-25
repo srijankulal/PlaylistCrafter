@@ -129,37 +129,11 @@ def similar():
 
 @app.route('/playlistBlend')
 def blends():
-    # playlists = sp.current_user_playlists()
-    # playlists2 = sp.current_user_playlists(offset=100)
     session['auth_route']='blendLogin'
     return render_template('./PlaylistBlend/playlistBlend.html')#, playlists=playlists['items'],playlists2=playlists2['items']
 
 
-@app.route('/blend_playlists', methods=['POST'])
-def blend_playlists():
-    if not sp_oauth.validate_token(cache_handler.get_cached_token()):
-        auth_url = sp_oauth.get_authorize_url()
-        return redirect(auth_url)
 
-    # Get the playlist IDs from the form
-    playlist1_id = request.form.get('playlist1_id')
-    playlist2_id = request.form.get('playlist2_id')
-    
-    # Fetch tracks from both playlists
-    playlist1_tracks = sp.playlist_tracks(playlist_id=playlist1_id, fields='items.track.id')
-    playlist2_tracks = sp.playlist_tracks(playlist_id=playlist2_id, fields='items.track.id')
-
-    # Combine tracks from both playlists (blending logic can be more complex)
-    combined_tracks = [item['track']['id'] for item in playlist1_tracks['items']] + [item['track']['id'] for item in playlist2_tracks['items']]
-    
-    # Create a new blended playlist
-    user_id = sp.current_user()['id']
-    new_playlist = sp.user_playlist_create(user_id, "Blended Playlist", public=True)
-    
-    # Add tracks to the new playlist
-    sp.playlist_add_items(new_playlist['id'], combined_tracks[:100])  # Spotify has a limit on how many tracks you can add at once
-    
-    return jsonify({"playlist_url": new_playlist['external_urls']['spotify']})
 
 @app.route('/auth_similarLogin')#check spotify login and logout details in similar page
 def similarLogin():
@@ -178,28 +152,63 @@ def blendLogin():
         return redirect(auth_url)
     return redirect(url_for('blends'))#here blends is function name for playlistblend page
 
+@app.route('/blend_playlists', methods=['POST'])#blends the playlist and create a new playlist with the songs of both playlist
+def blend_playlists():
+    playlist_id1 = request.form['playlistId1']
+    playlist_id2 = request.form['playlistId2']
+    if playlist_id1 and playlist_id2:
+        songsFromPlaylist1=get_all_playlist_tracks(playlist_id1)#results are the id of the songs
+        songsFromPlaylist2=get_all_playlist_tracks(playlist_id2)
+        # print(playlist_id1)
+        # print(playlist_id2)
+        # for list in songsFromPlaylist1:
+        #     print(list['track']['name'])
+        # for list2 in songsFromPlaylist1:
+        #     print(list2['track']['name'])
+        # # store the songs in a text file 
+        # with open('songsFromPlaylist1.txt', 'w') as f:
+        #     for song in songsFromPlaylist1:
+        #         f.write(f"{song['track']['name']} - {song['track']['artists'][0]['name']}\n")
+        # with open('songsFromPlaylist2.txt', 'w') as f:
+        #     for song in songsFromPlaylist2:
+        #         f.write(f"{song['track']['name']} - {song['track']['artists'][0]['name']}\n")
+        
+        
+        # songsFromPlaylist1 = sp.playlist_tracks(playlist_id1)['items']
+        # songsFromPlaylist2 = sp.playlist_tracks(playlist_id2)['items']
+        
+        
+    return
+def get_all_playlist_tracks(playlist_id):
+    all_tracks = []
+    results = sp.playlist_tracks(playlist_id)
+    all_tracks.extend(results['items'])
 
-
+    while results['next']:
+        results = sp.next(results)
+        all_tracks.extend(results['items'])
+    #return just id of all the songs only
+    all_tracks = [track['track']['id'] for track in all_tracks]
+    return all_tracks
+    
 @app.route('/create_playlist', methods=['POST'])
 def create_playlist():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()):# to check if user logined or not 
         auth_url = sp_oauth.get_authorize_url()
         return redirect(auth_url)
     song_name = request.form['song_name']
-    results = sp.search(q=song_name, limit=1, type='track')#gets the id
-    tracks = results['tracks']['items']
-    if not tracks:
-        return "Song not found",404
-    song_id = tracks[0]['id']
-    recommendations = sp.recommendations(seed_tracks=[song_id], limit=20)['tracks']
-    track_ids = [track['id'] for track in recommendations]
-    user_id = sp.current_user()['id']
-    playlist = sp.user_playlist_create(user_id,f"Playlist based on {song_name}",public=True)
-    sp.playlist_add_items(playlist['id'],track_ids)
-    playlist_url=playlist['external_urls']['spotify']
+    song_id = request.form['song_id']
+    if song_id:
+        track=sp.track(song_id)
+        recommendations = sp.recommendations(seed_tracks=[song_id], limit=20)['tracks']
+        track_ids = [track['id'] for track in recommendations]
+        user_id = sp.current_user()['id']
+        playlist = sp.user_playlist_create(user_id,f"Playlist based on {song_name}",public=True)
+        sp.playlist_add_items(playlist['id'],track_ids)
+        playlist_url=playlist['external_urls']['spotify']
     
-    return jsonify({"playlist_url": playlist_url})
-    # return redirect(playlist['external_urls']['spotify'])
+        return jsonify({"playlist_url": playlist_url})
+    return jsonify({"playlist_url": None})
 
 # @app.route('/create_mood',methods=['POST'])
 # def mood_playlist():
@@ -210,20 +219,35 @@ def create_playlist():
     
     
     
-@app.route('/autocomplete', methods=['GET'])
+@app.route('/autocomplete', methods=['GET'])# to get the song name suggestion
 def autocomplete():
     song_name = request.args.get('song_name', '')
     suggestions = []
     if song_name:
             results = sp.search(q=song_name, limit=8, type='track')
-            tracks = results['tracks']['items']
+            tracks = results['tracks']['items'] #to store the output in a list 
             suggestions = [{
+                'id': track['id'],
                 'name': track['name'],
                 'artist': track['artists'][0]['name'],
                 'cover_image': track['album']['images'][0]['url'] if track['album']['images'] else None
             } for track in tracks]
     return jsonify(suggestions)
 
+@app.route('/autocompletePlaylist', methods=['GET'])# to get the playlist name suggestion
+def autocompletePlaylist():
+    playlist_name = request.args.get('playlist_name', '')
+    suggestions = []
+    if playlist_name:
+            results = sp.search(q=playlist_name, limit=6, type='playlist')
+            playlists = results['playlists']['items']
+            suggestions = [{
+                'id': playlist['id'],
+                'name': playlist['name'],
+                'owner': playlist['owner']['display_name'] if 'owner' in playlist else 'Unknown',
+                'cover_image': playlist['images'][0]['url'] if playlist['images'] else None
+            } for playlist in playlists]
+    return jsonify(suggestions)
 
 @app.route('/callback')
 def callback():

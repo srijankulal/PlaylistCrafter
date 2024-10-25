@@ -108,3 +108,58 @@
   border: none;
 }
 
+.search-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+.search-box1 {
+  width: 300px;
+  padding: 10px;
+  /* border: 1px solid #ccc;
+  border-radius: 5px; */
+  font-size: 1.2em;
+  margin-left: 120px;/*to move the search box to the right*/
+}
+.search-box2{
+  width: 300px;
+  padding: 10px;
+  font-size: 1.2em;
+  margin-left: 110px;/*to move the search box to the right(change the box1 value too */
+}
+.suggestions-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+
+/* Style for the submit button */
+button[type="submit"] {
+  font-size: 1.5em;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: #ff4081;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover effect for the submit button */
+button[type="submit"]:hover {
+  background: #d00053;
+}
+/* Container to center the button */
+.Blendbutton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto; /* Full viewport height */
+}

@@ -106,49 +106,88 @@
       <a href="/" class="back-button">Home</a>
     </div>
     <h1>Playlist Blend</h1>
-    <form method="POST" action="/playlistBlend">
-      {% if session['logged_in']== True %}
-      <label for="playlist1">Select First Playlist:</label>
-      <select name="playlist1" id="playlist1" onchange="filterSecondPlaylist()">
-        <option value="">--Select First Playlist--</option>
-        {% for playlist in playlists %}
-        <option value="{{ playlist.id }}">{{ playlist.name }}</option>
-        {% endfor %}
-      </select>
-
-      <label for="playlist2">Select Second Playlist:</label>
-      <select name="playlist2" id="playlist2">
-        <option value="">--Select Second Playlist--</option>
-        {% for playlist in playlists2 %}
-        <option value="{{ playlist.id }}">{{ playlist.name }}</option>
-        {% endfor %}
-      </select>
-      {% else %}
-      <p>Please login to Spotify to access this feature.</p>
-      {% endif %}
+    {% if session['token_info'] %}
+    <form method="POST" action="/blend_playlists">
+      <div class="search-container">
+        <div class="search-box1">
+          <label for="playlist1">Search for First Playlist</label>
+          <input
+            type="text"
+            id="playlist_search1"
+            name="playlist_name1"
+            placeholder="Type a playlist name..."
+            aria-label="Playlist Search"
+            autocomplete="off"
+          />
+          <!-- Added to prevent browser's default autocomplete -->
+          <ul id="suggestions1" style="list-style-type: none; padding: 0"></ul>
+        </div>
+        <div class="search-box2">
+          <label for="playlist1">Search for Second Playlist</label>
+          <input
+            type="text"
+            id="playlist_search2"
+            name="playlist_name2"
+            placeholder="Type a playlist name..."
+            aria-label="Playlist Search"
+            autocomplete="off"
+          />
+          <!-- Added to prevent browser's default autocomplete -->
+          <ul id="suggestions2" style="list-style-type: none; padding: 0"></ul>
+        </div>
+      </div>
+      <div class="Blendbutton">
+        <button type="submit">Blend Playlists</button>
+      </div>
     </form>
-
-    <script>
-      function filterSecondPlaylist() {
-        // Get the selected playlist from the first dropdown
-        const selectedPlaylist1 = document.getElementById("playlist1").value;
-
-        // Get the second dropdown options
-        const playlist2 = document.getElementById("playlist2");
-        const options = playlist2.getElementsByTagName("option");
-
-        // Iterate over the options and disable the one that matches the first playlist
-        for (let i = 0; i < options.length; i++) {
-          if (options[i].value === selectedPlaylist1) {
-            options[i].disabled = true; // Disable the matching playlist
-          } else {
-            options[i].disabled = false; // Enable other playlists
-          }
-        }
-      }
-    </script>
-    {% if session['logged_in']== True %}
-    <button type="submit">Blend Playlists</button>
+    {% else %}
+    <p>Please login to Spotify to access this feature.</p>
     {% endif %}
   </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function setupAutocomplete(inputId, suggestionsId) {
+        //to decide from which input to get the suggestions
+        const inputElement = document.getElementById(inputId);
+        inputElement.addEventListener("input", function () {
+          const inputValue = this.value;
+          if (inputValue.length > 0) {
+            fetch(
+              `/autocompletePlaylist?playlist_name=${encodeURIComponent(
+                inputValue
+              )}`
+            )
+              .then((response) => response.json())
+              .then((suggestions) => {
+                const suggestionsList = document.getElementById(suggestionsId); //suggestion id is from function setupAutocomplete
+                suggestionsList.innerHTML = ""; // Clear existing suggestions
+                suggestions.forEach((suggestion) => {
+                  const li = document.createElement("li");
+                  li.style.cursor = "pointer";
+                  li.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                      <img src="${suggestion.cover_image}" alt="Cover Image" style="width: 50px; height: 50px; margin-right: 10px;">
+                      <div>
+                        <div><strong>${suggestion.name}</strong></div>
+                        <div>by ${suggestion.owner}</div>
+                      </div>
+                    </div>
+                  `;
+                  li.addEventListener("click", () => {
+                    inputElement.value = suggestion.name;
+                    suggestionsList.innerHTML = ""; // Clear suggestions after selection
+                  });
+                  suggestionsList.appendChild(li);
+                });
+              });
+          } else {
+            document.getElementById(suggestionsId).innerHTML = ""; // Clear suggestions if input is cleared
+          }
+        });
+      }
+
+      setupAutocomplete("playlist_search1", "suggestions1");
+      setupAutocomplete("playlist_search2", "suggestions2"); //depending on the number of playlists to be blended, add more setupAutocomplete calls
+    });
+  </script>
 </html>
