@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mood-Based Playlist Recommendation</title>
-    <link rel="stylesheet" href="/static/css/mood.css" />
+    <title>Playlist Blend</title>
+    <link rel="stylesheet" href="/static/css/blend.css" />
   </head>
   <body>
     <svg
@@ -172,12 +172,38 @@
       <button id="tryAgainBtn">Try Again</button>
     </div>
     {% endif %} {% endwith %}
+    <div id="SearchEmpty" class="modal2">
+      <div class="modal-content2">
+        <span class="close2">&times;</span>
+        <h2>
+          Please search for playlists and select it before creating a Blend.
+        </h2>
+        <button id="continueBtn2" class="modal-button">OK</button>
+      </div>
+    </div>
+    <div id="SamePlaylist" class="modal3">
+      <div class="modal-content3">
+        <span class="close3">&times;</span>
+        <h2>Choose two different playlists to blend.</h2>
+        <button id="continueBtn3" class="modal-button">OK</button>
+      </div>
+    </div>
+    <!-- This modal for if one of the playlist is not selected-->
+    <div id="OnePlaylistMiss" class="modal4">
+      <div class="modal-content4">
+        <span class="close4">&times;</span>
+        <h2>Please select two playlists to blend.</h2>
+        <button id="continueBtn4" class="modal-button">OK</button>
+      </div>
+    </div>
   </body>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       function setupAutocomplete(inputId, suggestionsId) {
-        //to decide from which input to get the suggestions
         const inputElement = document.getElementById(inputId);
+        const suggestionsList = document.getElementById(suggestionsId);
+        inputElement.parentNode.style.position = "relative"; // Ensure the container is positioned
+
         inputElement.addEventListener("input", function () {
           const inputValue = this.value;
           if (inputValue.length > 0) {
@@ -188,73 +214,101 @@
             )
               .then((response) => response.json())
               .then((suggestions) => {
-                const suggestionsList = document.getElementById(suggestionsId); //suggestion id is from function setupAutocomplete
                 suggestionsList.innerHTML = ""; // Clear existing suggestions
+                suggestionsList.style.display = "block"; // Show suggestions
+
                 suggestions.forEach((suggestion) => {
                   const li = document.createElement("li");
-                  li.style.cursor = "pointer";
                   li.innerHTML = `
                     <div style="display: flex; align-items: center;">
-                      <img src="${suggestion.cover_image}" alt="Cover Image" style="width: 50px; height: 50px; margin-right: 10px;">
+                      <img src="${suggestion.cover_image}" alt="Cover Image">
                       <div>
-                        <div><strong>${suggestion.name}</strong></div>
-                        <div>by ${suggestion.owner}</div>
+                        <strong>${suggestion.name}</strong>
+                        <span>by ${suggestion.owner}</span>
                       </div>
-                    </div>
-                  `;
+                    </div>`;
+
                   li.addEventListener("click", () => {
                     inputElement.value = suggestion.name;
                     document.getElementById(
                       `playlistId${inputId.slice(-1)}`
                     ).value = suggestion.id;
                     suggestionsList.innerHTML = ""; // Clear suggestions after selection
+                    suggestionsList.style.display = "none"; // Hide suggestions
                   });
                   suggestionsList.appendChild(li);
                 });
               });
           } else {
-            document.getElementById(suggestionsId).innerHTML = ""; // Clear suggestions if input is cleared
+            suggestionsList.innerHTML = ""; // Clear suggestions if input is cleared
+            suggestionsList.style.display = "none"; // Hide suggestions
           }
         });
+        //This will make the list close when clicked outside the search bar
+        /* document.addEventListener("click", function (event) {
+          if (!inputElement.contains(event.target)) {
+            suggestionsList.style.display = "none";
+          }
+        });*/
       }
 
       setupAutocomplete("playlist_search1", "suggestions1");
       setupAutocomplete("playlist_search2", "suggestions2"); //depending on the number of playlists to be blended, add more setupAutocomplete calls
-    });
-    document.addEventListener("DOMContentLoaded", function () {
-      // Get the modals
-      var playlistCreatedModal = document.getElementById(
-        "playlistCreatedModal"
-      );
+      //});
 
-      // Get the buttons that open the modal
-      var goToSpotifyBtn = document.getElementById("goToSpotifyBtn");
-      var continueBtn = document.getElementById("continueBtn");
+      // Handle modals
+      function initializeModal(modalId, closeClass, continueBtnId) {
+        const modal = document.getElementById(modalId);
+        const closeButtons = document.querySelectorAll(closeClass);
+        const continueBtn = document.getElementById(continueBtnId);
 
-      // Get the <span> elements that close the modals
-      var closeButtons = document.querySelectorAll(".close");
-
-      // When the user clicks on <span> (x), close the modal
-      closeButtons.forEach(function (closeButton) {
-        closeButton.onclick = function () {
-          playlistCreatedModal.style.display = "none";
+        closeButtons.forEach(
+          (button) => (button.onclick = () => (modal.style.display = "none"))
+        );
+        window.onclick = (event) => {
+          if (event.target == modal) modal.style.display = "none";
         };
-      });
+        if (continueBtn)
+          continueBtn.onclick = () => (modal.style.display = "none");
+      }
 
-      // When the user clicks anywhere outside of the modal, close it
-      window.onclick = function (event) {
-        if (event.target == playlistCreatedModal) {
-          playlistCreatedModal.style.display = "none";
-        }
-      };
-
-      // When the user clicks on the "Continue" button, close the modal
-      continueBtn.onclick = function () {
-        playlistCreatedModal.style.display = "none";
-      };
-
-      // Show the confirmation modal when the form is submitted
+      initializeModal("playlistCreatedModal", ".close", "continueBtn");
+      initializeModal("SearchEmpty", ".close2", "continueBtn2");
+      initializeModal("SamePlaylist", ".close3", "continueBtn3");
+      initializeModal("OnePlaylistMiss", ".close4", "continueBtn4");
     });
+
+    function callcreate_blend() {
+      const playlistIdInput1 = document.getElementById("playlistId1").value;
+      const playlistIdInput2 = document.getElementById("playlistId2").value;
+      // Check if playlist_id is set, otherwise show a message box
+      if (!playlistIdInput1 && !playlistIdInput2) {
+        document.getElementById("SearchEmpty").style.display = "block";
+        return; // Stop the function if no song_id is found
+      }
+      fetch("/blend_playlists", {
+        method: "POST",
+        body: new FormData(document.getElementById("playlist_form")),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.playlist_url == "Same") {
+            document.getElementById("SamePlaylist").style.display = "block";
+          } else if (data.playlist_url == "no1") {
+            document.getElementById("OnePlaylistMiss").style.display = "block";
+          } else if (data.playlist_url == "no2") {
+            document.getElementById("OnePlaylistMiss").style.display = "block";
+          } else if (data.playlist_url) {
+            playlistUrl = data.playlist_url;
+            // Show the modal or any other UI update
+            document.getElementById("playlistCreatedModal").style.display =
+              "block";
+          } else {
+            console.error("Error creating playlist: " + data.error);
+          }
+        })
+        .catch((error) => console.error(error));
+    }
     document.getElementById("goToSpotifyBtn").onclick = function () {
       if (playlistUrl) {
         window.open(playlistUrl);
@@ -262,43 +316,28 @@
         console.error("Playlist URL is not set.");
       }
     };
-    function callcreate_blend() {
-      const playlistIdInput1 = document.getElementById("playlistId1").value;
-      const playlistIdInput2 = document.getElementById("playlistId2").value;
-
-      // Check if song_id is set, otherwise show a message box
-      /*if (!songIdInput) {
-        document.getElementById("SearchEmpty").style.display = "block";
-        return; // Stop the function if no song_id is found
-      }*/
-      fetch("/blend_playlists", {
-        method: "POST",
-        body: new FormData(document.getElementById("playlist_form")),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if(data.playlist_url=="Same"){
-            document.getElementById("playlistCreatedModal").style.display =
-              "block";
-          }
-          else if(data.playlist_url=="no1"){
-            document.getElementById("playlistCreatedModal").style.display =
-              "block";
-          }
-          else if(data.playlist_url=="no2"){
-            document.getElementById("playlistCreatedModal").style.display =
-              "block";
-          }
-          else if (data.playlist_url) {
-            playlistUrl = data.playlist_url;
-            // Show the modal or any other UI update
-            document.getElementById("playlistCreatedModal").style.display =
-              "block";
-          } else
-            console.error("Error creating playlist: " + data.error);
-          }
-        })
-        .catch((error) => console.error(error));
+    function handleFormSubmit() {
+      const playlistSearchInput1 = document.getElementById("playlist_search1");
+      const playlistIdInput1 = document.getElementById("playlistId1");
+      const playlistSearchInput2 = document.getElementById("playlist_search2");
+      const playlistIdInput2 = document.getElementById("playlistId2");
+      // Clear the input fields after submission
+      playlistSearchInput1.value = "";
+      playlistSearchInput2.value = "";
+      playlistIdInput1.value = "";
+      playlistIdInput2.value = "";
     }
+    document
+      .querySelector(".close-button")
+      .addEventListener("click", function () {
+        document.querySelector(".flashes").style.display = "none";
+      });
+
+    document
+      .getElementById("tryAgainBtn")
+      .addEventListener("click", function () {
+        window.location.href = "/login";
+        // Add logic here to retry the action (e.g., reload the page or show the form again)
+      });
   </script>
 </html>

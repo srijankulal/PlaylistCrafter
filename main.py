@@ -201,7 +201,6 @@ def createBlend(songsFromPlaylist1 ,songsFromPlaylist2):
     finList=list1+list2
     rd.shuffle(finList)
     blendList=finList[:blendLimit]
-        # Remove duplicate IDs
     # Remove duplicate IDs
     seen = set()
     unique_blendList = []
@@ -262,7 +261,7 @@ def autocompletePlaylist():
     playlist_name = request.args.get('playlist_name', '')
     suggestions = []
     if playlist_name:
-            results = sp.search(q=playlist_name, limit=6, type='playlist')
+            results = sp.search(q=playlist_name, limit=10, type='playlist')
             playlists = results['playlists']['items']
             suggestions = [{
                 'id': playlist['id'],
