@@ -125,6 +125,7 @@
       id="song_form"
       onsubmit="event.preventDefault(); callcreate_playlist();handleFormSubmit();"
     >
+      {% if session['token_info'] %}
       <input
         type="text"
         id="song_search"
@@ -139,6 +140,9 @@
       <ul id="suggestions" style="list-style-type: none; padding: 0"></ul>
       <input type="submit" value="Create Playlist" />
       <!-- <input type="submit" value="Logout"/> -->
+      {% else %}
+      <h2 class="h2">Please Connect with Spotify to Create Playlist.</h2>
+      {% endif %}
     </form>
 
     <div id="playlistCreatedModal" class="modal">
@@ -162,7 +166,16 @@
       <button id="tryAgainBtn">Try Again</button>
     </div>
     {% endif %} {% endwith %}
-
+    <div id="playlistCreating" class="modal1">
+      <div class="modal-content1">
+        <h2>
+          Playlist is being created. Please wait while we find similar songs.
+        </h2>
+        <div class="loader">
+          <span></span>
+        </div>
+      </div>
+    </div>
     <div id="SearchEmpty" class="modal2">
       <div class="modal-content2">
         <span class="close2">&times;</span>
@@ -312,6 +325,7 @@
           document.getElementById("SearchEmpty").style.display = "block";
           return; // Stop the function if no song_id is found
         }
+        document.getElementById("playlistCreating").style.display = "block";
         fetch("/create_playlist", {
           method: "POST",
           body: new FormData(document.getElementById("song_form")),
@@ -319,6 +333,8 @@
           .then((response) => response.json())
           .then((data) => {
             if (data.playlist_url) {
+              document.getElementById("playlistCreating").style.display =
+                "none";
               playlistUrl = data.playlist_url;
               // Show the modal or any other UI update
               document.getElementById("playlistCreatedModal").style.display =

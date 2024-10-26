@@ -41,6 +41,25 @@ h1 span:hover {
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5); /* Darker shadow on hover */
 }
 
+.h2 {
+        font-size: 2.5em; /* Increased size for standout */
+        font-weight: 600; /* Make it bolder */
+        margin: 0;
+
+        transform: translateY(20px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        background: linear-gradient(
+          to right,
+          #e0ffff,
+          /* Light Cyan */ #32cd32,
+          /* Lime Green */#ffffff
+          /* Goldenrod */   /* Repeat Light Cyan for a full gradient */
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        -webkit-text-stroke: 0.1px #000000; 
+/* Pink text stroke */
+      }
 /* Keyframes for breathing animation */
 @keyframes breathing {
   0%,
@@ -179,6 +198,81 @@ form {
 .modal-button:hover {
   background-color: #45a049; /* Darker shade for hover effect */
 }
+/* Modal for playlist creation */
+.modal1 {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-content1 {
+  background-color: rgba(0, 187, 249, 0.8);
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 30px;
+  border: 1px solid #888;
+  width: 50%; /* Could be more or less, depending on screen size */
+  border-radius: 20px;
+  text-align: center; /* Center the text and loader */
+}
+
+/* Loader styling */
+.loader {
+  width: 50px; /* Adjust width for better visibility */
+  height: 50px; /* Adjust height for better visibility */
+  margin: 20px auto; /* Center loader horizontally */
+  position: relative;
+  animation: flippx 2s infinite linear; /* Animation */
+}
+
+.loader:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgb(241, 91, 181);
+  transform-origin: -24px 50%;
+  animation: spin 1s infinite linear; /* Spinner effect */
+}
+
+.loader:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgb(0, 245, 212); /* Loader color */
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+/* Keyframe animations */
+@keyframes flippx {
+  0%, 49% {
+    transform: scaleX(1);
+  }
+  50%, 100% {
+    transform: scaleX(-1);
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg); /* Spinner rotation */
+  }
+}
+
+
 /*models for empty search box*/
 /* pop for to select after playlist is created*/
 .modal2 {

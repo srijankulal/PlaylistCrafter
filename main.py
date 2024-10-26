@@ -15,6 +15,7 @@ app.config["SECRET_KEY"]=os.getenv("Secret_key")
 client_id=os.getenv("Client_ID")
 client_secret=os.getenv("Client_SECRET")
 redirect_url="http://127.0.0.1:5000/callback"
+redirect_url1="http://qc1hlnwn-5000.inc1.devtunnels.ms//callback"
 scope = 'user-read-recently-played user-top-read user-library-read playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email playlist-read-collaborative'
 
 cache_handler = FlaskSessionCacheHandler(session)#to store the token in flask
@@ -27,71 +28,6 @@ sp_oauth=SpotifyOAuth(
     show_dialog=False #debugg    git commit -m "Initial commit"
 )
 sp = Spotify(auth_manager=sp_oauth)
-
-# Mood ranges dictionary
-# mood_ranges = {
-#     'angry': {'valence': (0.0, 0.3), 'energy': (0.7, 1.0)},
-#     'frustrated': {'valence': (0.2, 0.4), 'energy': (0.6, 0.8)},
-#     'irritated': {'valence': (0.2, 0.4), 'energy': (0.5, 0.7)},
-#     'annoyed': {'valence': (0.3, 0.5), 'energy': (0.5, 0.7)},
-#     'upset': {'valence': (0.1, 0.3), 'energy': (0.4, 0.6)},
-#     'disgusted': {'valence': (0.0, 0.2), 'energy': (0.4, 0.6)},
-#     'sad': {'valence': (0.0, 0.3), 'energy': (0.0, 0.5)},
-#     'miserable': {'valence': (0.0, 0.2), 'energy': (0.1, 0.4)},
-#     'gloomy': {'valence': (0.1, 0.3), 'energy': (0.2, 0.4)},
-#     'dejected': {'valence': (0.0, 0.2), 'energy': (0.1, 0.3)},
-#     'bored': {'valence': (0.2, 0.4), 'energy': (0.2, 0.4)},
-#     'tired': {'valence': (0.1, 0.3), 'energy': (0.1, 0.3)},
-#     'relaxed': {'valence': (0.5, 0.7), 'energy': (0.2, 0.4)},
-#     'calm': {'valence': (0.5, 0.7), 'energy': (0.1, 0.3)},
-#     'serene': {'valence': (0.6, 0.8), 'energy': (0.2, 0.4)},
-#     'happy': {'valence': (0.7, 1.0), 'energy': (0.6, 1.0)},
-#     'contented': {'valence': (0.7, 0.9), 'energy': (0.4, 0.6)},
-#     'pleased': {'valence': (0.7, 0.9), 'energy': (0.5, 0.7)},
-#     'joy': {'valence': (0.8, 1.0), 'energy': (0.7, 1.0)},
-#     'ecstatic': {'valence': (0.9, 1.0), 'energy': (0.8, 1.0)},
-#     'excited': {'valence': (0.8, 1.0), 'energy': (0.8, 1.0)},
-#     'surprised': {'valence': (0.7, 0.9), 'energy': (0.7, 0.9)},
-#     'astonished': {'valence': (0.8, 1.0), 'energy': (0.7, 0.9)},
-#     'amused': {'valence': (0.6, 0.8), 'energy': (0.5, 0.7)},
-#     'engaged': {'valence': (0.6, 0.8), 'energy': (0.6, 0.8)},
-#     'alarmed': {'valence': (0.3, 0.5), 'energy': (0.7, 0.9)},
-#     'shocked': {'valence': (0.2, 0.4), 'energy': (0.7, 0.9)},
-#     'neutral': {'valence': (0.4, 0.6), 'energy': (0.4, 0.6)},
-#     'apathetic': {'valence': (0.3, 0.5), 'energy': (0.3, 0.5)},
-#     'concerned': {'valence': (0.4, 0.6), 'energy': (0.5, 0.7)},
-#     'contemplative': {'valence': (0.4, 0.6), 'energy': (0.3, 0.5)},
-#     'relief': {'valence': (0.5, 0.7), 'energy': (0.3, 0.5)},
-#     'at ease': {'valence': (0.5, 0.7), 'energy': (0.2, 0.4)},
-#     'drowsy': {'valence': (0.3, 0.5), 'energy': (0.1, 0.3)},
-#     'sleepy': {'valence': (0.2, 0.4), 'energy': (0.1, 0.2)}
-# }
-
-# def get_track_features(track_id):
-#     features = sp.audio_features([track_id])[0]
-#     return {
-#         'danceability': features['danceability'],
-#         'energy': features['energy'],
-#         'valence': features['valence']
-#     }
-
-# def recommend_by_mood(mood):
-#     selected_range = mood_ranges.get(mood)
-#     if not selected_range:
-#         return []
-
-#     results = sp.search(q='.', type='track', limit=50)
-
-#     recommendations = []
-#     for track in results['tracks']['items']:
-#         features = get_track_features(track['id'])
-#         if (selected_range['valence'][0] <= features['valence'] <= selected_range['valence'][1] and
-#             selected_range['energy'][0] <= features['energy'] <= selected_range['energy'][1]):
-#             recommendations.append(track['name'])
-
-#     return recommendations
-
-
 
 
 
@@ -166,18 +102,17 @@ def blend_playlists():
             FinalPlaylistIds=createBlend(songsFromPlaylist1,songsFromPlaylist2)
             user_id = sp.current_user()['id']
             playlist = sp.user_playlist_create(user_id, f"Blended Playlist", public=True,collaborative=False,description=f"{playlistName1} + {playlistName2}")
-            sp.playlist_add_items(playlist['id'], FinalPlaylistIds)
+            playlist_id = playlist['id']
+    
+    # Add tracks to the playlist in chunks
+            for chunk in chunk_list(FinalPlaylistIds, 100):
+                sp.playlist_add_items(playlist_id, chunk)
             # print(playlist)
             playlist_url=playlist['external_urls']['spotify']
-            # print(playlist_url)
+            print(playlist_url)
             return jsonify({"playlist_url": playlist_url})
-        return jsonify({"playlist_url": "Same"})
-    elif not playlist_id1:
-        return jsonify({"playlist_url": "no1"})
-    elif not playlist_id2:
-        return jsonify({"playlist_url": "no2"})
-    else:
-        return jsonify({"playlist_url": None})
+
+
     
 
 def get_all_playlist_tracks(playlist_id):#this function is used to get all the songs id from the playlist and send only ids
@@ -191,6 +126,11 @@ def get_all_playlist_tracks(playlist_id):#this function is used to get all the s
     #returns just id of all the songs 
     all_tracks = [track['track']['id'] for track in all_tracks]
     return all_tracks
+
+def chunk_list(lst, chunk_size):
+    """Helper function to split a list into chunks."""
+    for i in range(0, len(lst), chunk_size):
+        yield lst[i:i + chunk_size]
 
 #This function is to create final list of songs 
 def createBlend(songsFromPlaylist1 ,songsFromPlaylist2):

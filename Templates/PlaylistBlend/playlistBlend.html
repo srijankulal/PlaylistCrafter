@@ -129,7 +129,7 @@
           <ul id="suggestions1" style="list-style-type: none; padding: 0"></ul>
         </div>
         <div class="search-box2">
-          <label for="playlist1">Search for Second Playlist</label>
+          <!--<label for="playlist1">Search for Second Playlist</label>-->
           <input
             type="text"
             id="playlist_search2"
@@ -172,6 +172,16 @@
       <button id="tryAgainBtn">Try Again</button>
     </div>
     {% endif %} {% endwith %}
+    <div id="playlistCreating" class="modal1">
+      <div class="modal-content1">
+        <h2>
+          Playlist is being created. Please wait while we blend the playlists.
+        </h2>
+        <div class="loader">
+          <span></span>
+        </div>
+      </div>
+    </div>
     <div id="SearchEmpty" class="modal2">
       <div class="modal-content2">
         <span class="close2">&times;</span>
@@ -276,6 +286,7 @@
       initializeModal("SearchEmpty", ".close2", "continueBtn2");
       initializeModal("SamePlaylist", ".close3", "continueBtn3");
       initializeModal("OnePlaylistMiss", ".close4", "continueBtn4");
+      //initializeModal("playlistCreating", null, null);
     });
 
     function callcreate_blend() {
@@ -286,21 +297,31 @@
         document.getElementById("SearchEmpty").style.display = "block";
         return; // Stop the function if no song_id is found
       }
+      if (playlistIdInput1 == playlistIdInput2) {
+        document.getElementById("SamePlaylist").style.display = "block";
+        return;
+      }
+      if (!playlistIdInput1 || !playlistIdInput2) {
+        document.getElementById("OnePlaylistMiss").style.display = "block";
+        return;
+      }
+      document.getElementById("playlistCreating").style.display = "block";
       fetch("/blend_playlists", {
         method: "POST",
         body: new FormData(document.getElementById("playlist_form")),
       })
         .then((response) => response.json())
         .then((data) => {
-          if (data.playlist_url == "Same") {
+          /*  if (data.playlist_url == "Same") {
             document.getElementById("SamePlaylist").style.display = "block";
           } else if (data.playlist_url == "no1") {
             document.getElementById("OnePlaylistMiss").style.display = "block";
           } else if (data.playlist_url == "no2") {
             document.getElementById("OnePlaylistMiss").style.display = "block";
-          } else if (data.playlist_url) {
+          } else*/ if (data.playlist_url) {
             playlistUrl = data.playlist_url;
             // Show the modal or any other UI update
+            document.getElementById("playlistCreating").style.display = "None";
             document.getElementById("playlistCreatedModal").style.display =
               "block";
           } else {
