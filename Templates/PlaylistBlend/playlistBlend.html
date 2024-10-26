@@ -105,7 +105,14 @@
     <div class="back-button-container">
       <a href="/" class="back-button">Home</a>
     </div>
-    <h1>Playlist Blend</h1>
+    <div class="modern-heading-container">
+      <h1 class="modern-heading">
+        <span>P</span><span>l</span><span>a</span><span>y</span><span>l</span
+        ><span>i</span><span>s</span><span>t</span> <span>B</span><span>l</span
+        ><span>e</span><span>n</span><span>d</span>
+      </h1>
+    </div>
+
     {% if session['token_info'] %}
     <form
       id="playlist_form"
@@ -129,7 +136,7 @@
           <ul id="suggestions1" style="list-style-type: none; padding: 0"></ul>
         </div>
         <div class="search-box2">
-          <!--<label for="playlist1">Search for Second Playlist</label>-->
+          <label for="playlist1">Search for Second Playlist</label>
           <input
             type="text"
             id="playlist_search2"

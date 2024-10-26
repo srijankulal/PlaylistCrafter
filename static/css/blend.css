@@ -6,7 +6,7 @@
   height: 100vh;
   z-index: -1; /* Ensure it is behind other content */
   overflow: hidden;
-  background-color: #333333; /* Change this to your desired color */
+  background-color: #540e69; /* Change this to your desired color */
 }
 
 
@@ -138,6 +138,102 @@
   border-radius: 5px;
 }
 
+/* Main Heading Container */
+.main-heading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Main Heading Style */
+.main-heading {
+  font-size: 3em;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.5);
+  animation: fadeInGlow 3s ease-out infinite alternate;
+  position: relative;
+  letter-spacing: 2px;
+}
+
+/* Minimalistic Glow Animation */
+@keyframes fadeInGlow {
+  0% {
+    text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    text-shadow: 0px 0px 15px rgba(255, 255, 255, 0.7);
+  }
+}
+/* Container Styling */
+.modern-heading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20vh;
+  position: relative;
+  z-index: 1;
+}
+
+.modern-heading {
+  font-size: 4rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 15px;
+  position: relative;
+  overflow: hidden;
+  padding: 10px 0;
+}
+
+.modern-heading::before,
+.modern-heading::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: transform 0.5s ease;
+}
+
+.modern-heading::before {
+  top: 0;
+  left: -100%;
+}
+
+.modern-heading::after {
+  bottom: 0;
+  right: -100%;
+}
+
+.modern-heading:hover::before {
+  transform: translateX(100%);
+}
+
+.modern-heading:hover::after {
+  transform: translateX(-100%);
+}
+
+.modern-heading span {
+  display: inline-block;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modern-heading:hover span {
+  opacity: 1;
+  transform: translateY(-5px);
+}
+
+@media (max-width: 768px) {
+  .modern-heading {
+    font-size: 3rem;
+    letter-spacing: 10px;
+  }
+}
+
 
 /* Style for the submit button */
 button[type="submit"] {
@@ -158,7 +254,7 @@ button[type="submit"]:hover {
 }
 input[type="text"]::placeholder {
   font-size: 20px; /* Adjust the font size of the placeholder text */
-  color: #888; /* Optional: Change the color of the placeholder text */
+  color: #dad8d8; /* Optional: Change the color of the placeholder text */
 }
 
 label {
@@ -168,10 +264,10 @@ label {
 
   transform: translateY(20px);
         transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        background: rgb(255, 255, 255);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        -webkit-text-stroke: 0.5px #000000; /* Pink text stroke */
+        color: #E0E0E0; /* Label color */
+        /*-webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;*/
+        /* -webkit-text-stroke: 0.5px #000000; Pink text stroke */
       }
 
 /* Style for the input field */
