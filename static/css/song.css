@@ -96,6 +96,21 @@ form {
   justify-content: center;
   margin-top: 2vh;
 }
+.center-container {
+  display: flex;
+  justify-content: center;
+  height: 10vh; /* Full viewport height */
+}
+.arrow {
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 20px solid #ff4081; /* Match the button color */
+  margin-top: 10px;
+  rotate: 180deg;
+   /* Adjust the position of the arrow */
+}
 
 /* Style for the input field */
 #song_search {

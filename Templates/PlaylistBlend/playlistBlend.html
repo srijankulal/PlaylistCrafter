@@ -107,9 +107,8 @@
     </div>
     <div class="modern-heading-container">
       <h1 class="modern-heading">
-        <span>P</span><span>l</span><span>a</span><span>y</span><span>l</span
-        ><span>i</span><span>s</span><span>t</span> <span>B</span><span>l</span
-        ><span>e</span><span>n</span><span>d</span>
+        <span class="word playlist">Playlist</span>
+        <span class="word blend">Blend</span>
       </h1>
     </div>
 
@@ -156,7 +155,13 @@
       </div>
     </form>
     {% else %}
-    <p>Please login to Spotify to access this feature.</p>
+    <div class="center-container">
+      <h2 class="h2">
+        Please login to Spotify to access this feature. Use "Connect to spotify
+        Button"
+      </h2>
+      <div class="arrow"></div>
+    </div>
     {% endif %}
     <div id="playlistCreatedModal" class="modal">
       <div class="modal-content">
