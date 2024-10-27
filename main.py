@@ -14,8 +14,8 @@ app.config["SECRET_KEY"]=os.getenv("Secret_key")
 
 client_id=os.getenv("Client_ID")
 client_secret=os.getenv("Client_SECRET")
-redirect_url="http://127.0.0.1:5000/callback"
-redirect_url1="http://qc1hlnwn-5000.inc1.devtunnels.ms//callback"
+redirect_url1="http://127.0.0.1:5000/callback"
+redirect_url="http://qc1hlnwn-5000.inc1.devtunnels.ms//callback"
 scope = 'user-read-recently-played user-top-read user-library-read playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email playlist-read-collaborative'
 
 cache_handler = FlaskSessionCacheHandler(session)#to store the token in flask
@@ -109,7 +109,7 @@ def blend_playlists():
                 sp.playlist_add_items(playlist_id, chunk)
             # print(playlist)
             playlist_url=playlist['external_urls']['spotify']
-            print(playlist_url)
+            # print(playlist_url)
             return jsonify({"playlist_url": playlist_url})
 
 

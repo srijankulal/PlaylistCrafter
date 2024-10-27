@@ -41,25 +41,7 @@ h1 span:hover {
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5); /* Darker shadow on hover */
 }
 
-.h2 {
-        font-size: 2.5em; /* Increased size for standout */
-        font-weight: 600; /* Make it bolder */
-        margin: 0;
-
-        transform: translateY(20px);
-        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        background: linear-gradient(
-          to right,
-          #e0ffff,
-          /* Light Cyan */ #32cd32,
-          /* Lime Green */#ffffff
-          /* Goldenrod */   /* Repeat Light Cyan for a full gradient */
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        -webkit-text-stroke: 0.1px #000000; 
-/* Pink text stroke */
-      }
+/*  */
 /* Keyframes for breathing animation */
 @keyframes breathing {
   0%,
@@ -96,20 +78,44 @@ form {
   justify-content: center;
   margin-top: 2vh;
 }
+/* Center Container */
 .center-container {
   display: flex;
-  justify-content: center;
-  height: 10vh; /* Full viewport height */
+  flex-direction: column;
+  align-items: center;
+ 
+  height: 10vh;
 }
-.arrow {
-  width: 0;
-  height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-top: 20px solid #ff4081; /* Match the button color */
-  margin-top: 10px;
-  rotate: 180deg;
-   /* Adjust the position of the arrow */
+
+/* Heading */
+.h2 {
+  font-size: 2.5em;
+  font-weight: 600;
+  margin: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  background: linear-gradient(to right, #e0ffff, #32cd32, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 0.1px #000000;
+  text-align: center;
+}
+/* Connect Span (Button Style) */
+.connect {
+  display: inline-block;
+  color: #32cd32;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 2px solid #000000c4;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.connect:hover {
+  background-color: #32cd32ae;
+  color: #fff;
+  box-shadow: 0 0 10px #32cd32, 0 0 20px #32cd32, 0 0 30px #32cd32;
 }
 
 /* Style for the input field */
@@ -136,28 +142,60 @@ form {
 /* Style for the suggestions list */
 #suggestions {
   list-style-type: none;
-  padding: 50px;
-  width: 70%;
+  padding: 30px; /* Reduced padding for a smaller appearance */
+  width: 80%;
   max-width: 700px;
+  max-height: 300px; /* Limits height to make the list smaller */
   background: rgba(255, 255, 255, 0.3);
   border-radius: 8px;
-  overflow: hidden;
+  overflow-y: auto; /* Enables vertical scrolling */
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Two columns */
-  gap: 8px; /* Space between columns */
+  grid-template-columns: 1fr; /* Single column */
+  gap: 8px; /* Space between items */
+}
+/* Scrollbar styling for webkit browsers (Chrome, Safari) */ 
+#suggestions::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
 }
 
+#suggestions::-webkit-scrollbar-thumb{
+  background: rgba(255, 255, 255, 0.6); /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded edges */
+}
+
+#suggestions::-webkit-scrollbar-track{
+  background: rgba(255, 255, 255, 0.3); /* Color of the scrollbar track */
+}
 #suggestions li {
-  padding: 12px;
+  padding: 11px;
   background: rgba(255, 255, 255, 0.3);
   color: #ffffff;
   margin-bottom: 12px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
   transition: background 0.3s ease;
+  display: flex; /* Use flexbox for item layout */
+  align-items: center; /* Vertically center the content */
 }
 
 #suggestions li:hover {
   background: rgba(255, 255, 255, 0.4);
+}
+
+#suggestions img {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px; /* Space between image and text */
+  border-radius: 4px;
+}
+
+#suggestions div {
+  flex: 1; /* Allow text to take the remaining space */
+}
+
+/* Firefox scrollbar styling */
+#suggestions{
+  scrollbar-width: thin; /* Make the scrollbar thinner */
+  scrollbar-color: rgba(255, 255, 255, 0.6) rgba(255, 255, 255, 0.3); /* Thumb color and track color */
 }
 /* pop for to select after playlist is created*/
 .modal {

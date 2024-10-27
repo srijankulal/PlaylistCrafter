@@ -157,8 +157,16 @@
     {% else %}
     <div class="center-container">
       <h2 class="h2">
-        Please login to Spotify to access this feature. Use "Connect to spotify
-        Button"
+        Please login to Spotify to access this feature. Use
+        <span class="connect">"Connect to spotify Button"</span>
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            const connectButton = document.querySelector(".connect");
+            connectButton.addEventListener("click", () => {
+              window.location.href = "/login";
+            });
+          });
+        </script>
       </h2>
       <div class="arrow"></div>
     </div>

@@ -297,42 +297,67 @@ label {
         -webkit-text-fill-color: transparent;*/
         /* -webkit-text-stroke: 0.5px #000000; Pink text stroke */
       }
-    
-.center-container {
-        display: flex;
-        justify-content: center;
-        height: 10vh; /* Full viewport height */
-      }
-.h2 {
-        font-size: 2.5em; /* Increased size for standout */
-        font-weight: 600; /* Make it bolder */
-        margin: 0;
-        align-self: center;
-        transform: translateY(20px);
-        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        background: linear-gradient(
-          to right,
-          #e0ffff,
-          #32cd32,/* Light Cyan */ 
-          #ffffff/* Lime Green */
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        -webkit-text-stroke: 0.1px #000000; 
-/* Pink text stroke */
-      }
-      /* Style for the form */
 
-      .arrow {
-        width: 0;
-        height: 0;
-        border-left: 20px solid transparent;
-        border-right: 20px solid transparent;
-        border-top: 20px solid #ff4081; /* Match the button color */
-        margin-top: 10px;
-        rotate: 180deg;
-         /* Adjust the position of the arrow */
-      }
+/* Center Container */
+.center-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 10vh;
+}
+
+/* Heading */
+.h2 {
+  font-size: 2.5em;
+  font-weight: 600;
+  margin: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  background: linear-gradient(to right, #e0ffff, #32cd32, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 0.1px #000000;
+  text-align: center;
+}
+
+/* Connect Span (Button Style) */
+.connect {
+  display: inline-block;
+  color: #32cd32;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 2px solid #000000c4;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.connect:hover {
+  background-color: #32cd32ae;
+  color: #fff;
+  box-shadow: 0 0 10px #32cd32, 0 0 20px #32cd32, 0 0 30px #32cd32;
+}
+
+
+
+/* Arrow Animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0) rotate(180deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(180deg);
+  }
+}
+
+/* Responsive Font Size */
+@media (max-width: 768px) {
+  .h2 {
+    font-size: 1.8em;
+  }
+}
+
 /* Style for the input field */
 #playlist_search1 {
   font-size: 1.5em;
