@@ -105,7 +105,7 @@ def blend_playlists():
             playlist = sp.user_playlist_create(user_id, f"Blended Playlist", public=True,collaborative=False,description=f"{playlistName1} + {playlistName2}")
             playlist_id = playlist['id']
     
-    # Add tracks to the playlist in chunks
+    # Add tracks to the playlist in chunks easy no stress 
             for chunk in chunk_list(FinalPlaylistIds, 100):
                 sp.playlist_add_items(playlist_id, chunk)
             # print(playlist)
