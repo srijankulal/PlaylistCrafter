@@ -1,0 +1,346 @@
+:root {
+    --bg-color: #0a0a0a;
+    --text-color: #e0e0e0;
+    --accent-color: #00ffff;
+    --secondary-color: rgba(26, 26, 26, 0.8);
+    --font-main: 'Arial', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@keyframes move-twink-back {
+    from {background-position: 0 0;}
+    to {background-position: -10000px 5000px;}
+}
+
+@keyframes move-clouds-back {
+    from {background-position: 0 0;}
+    to {background-position: 10000px 0;}
+}
+
+body, html {
+    height: 100%;
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background-color: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+}
+
+nav ul li {
+    margin: 0 1rem;
+}
+
+nav ul li a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+nav ul li a:hover {
+    opacity: 0.7;
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+main {
+    padding-top: 4rem;
+}
+
+.panel {
+    height: 120vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    scroll-snap-align: start;
+    overflow-y: auto;
+
+}
+
+
+.aboutme,.abtProject,.resources{
+    max-width: 1000px;
+    max-height: -webkit-fill-available;
+    padding: 20px;
+    margin-bottom: 2rem; 
+
+   
+
+
+}
+
+.image-and-text {
+    display: flex;
+    align-items: center;
+}
+.text-content {
+     /* Allow the text content to take up the remaining space */
+    max-height: -webkit-fill-available;
+    padding: 20px;
+
+}
+
+
+h1, h2 {
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 3.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+p {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.resource-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.resource-link:hover {
+    opacity: 0.7;
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+@media (max-width: 768px) {
+    .content {
+        padding: 1rem;
+        margin: 0 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    nav ul li {
+        margin: 0 0.5rem;
+    }
+
+    nav ul li a {
+        font-size: 1rem;
+    }
+}
+.image-bubble {
+    display: flex;
+    margin-bottom: 40px;
+    margin-right: 40px; /* Space between the image and the content */
+  }
+  
+  .image-bubble img {
+    width: 180px; /* Adjust the size as needed */
+    height: 180px; /* Adjust the size as needed */
+    border-radius: 50%; /* Make the image circular */
+    border: 5px solid #fff; /* Optional: Add a white border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+  }
+
+  .features-container {
+    margin-top: 20px;
+    padding: 20px;
+    background: #e3f2fd; /* Light blue background for subtle color contrast */
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #00bbf9; /* Accent border for a modern touch */
+  }
+  
+  .features-container h3 {
+    font-size: 1.8em;
+    color: #005288; /* Darker shade for heading contrast */
+    margin-bottom: 15px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .feature-list {
+    list-style-type: none;
+    padding: 0;
+    font-size: 1.15em;
+    color: #333; /* Dark text for readability */
+  }
+  
+  .feature-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #b0e5ff;
+  }
+  
+  .feature-list li .icon {
+    font-size: 1.4em;
+    margin-right: 10px;
+    color: #00bbf9; /* Accent color for icons */
+  }
+  
+  .github-icon,.email-icon,.linkedin-icon {
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 1.5em;
+    color: #333; /* Default icon color */
+    transition: color 0.3s ease;
+    text-decoration: none;
+}
+
+.github-icon:hover {
+    color: #5c6ac0; /* Darker shade on hover */
+}
+
+.linkedin-icon:hover {
+    color: #0077b5; /* Change color on hover for LinkedIn */
+}
+
+.email-icon:hover {
+    color: #d93025; /* Change color on hover for email */
+}
+
+@import url('https://fonts.googleapis.com/css?family=Exo:400,700');
+
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+body{
+    font-family: 'Exo', sans-serif;
+}
+
+
+.context {
+    width: 100%;
+    position: absolute;
+    top:50vh;
+    
+}
+
+.context h1{
+    text-align: center;
+    color: #fff;
+    font-size: 50px;
+}
+
+.resource-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.resource-link:hover {
+    opacity: 0.7;
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+.resources {
+    max-width: 800px; /* Set a max width for better readability */
+    margin: auto; /* Center the content */
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+.resources h2 {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase; /* Uppercase text for emphasis */
+}
+.author {
+    color: #e0e0e0; /* Lighter color for author names */
+    font-weight: 300; /* Lighter font weight */
+}
+
+#resource-list {
+    list-style-type: none; /* Remove default list style */
+    padding: 0;
+}
+
+#resource-list li {
+    margin: 10px 0; /* Space between items */
+    padding: 10px; /* Padding for clickable area */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Subtle separator line */
+}
+
+
+.issue-report {
+    max-width: 800px; /* Max width for readability */
+    margin: auto; /* Center the content */
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    text-align: center; /* Center the text */
+}
+
+.issue-report h2 {
+    font-size: 2rem; /* Size for the heading */
+    color: var(--accent-color); /* Accent color for visibility */
+    margin-bottom: 10px; /* Space below heading */
+}
+
+.issue-report p {
+    font-size: 1.2rem; /* Slightly larger text */
+    color: #e0e0e0; /* Lighter color for the message */
+}
+
+.report-link {
+    color: var(--accent-color); /* Link color */
+    text-decoration: underline; /* Underline link */
+    transition: color 0.3s; /* Smooth color transition */
+}
+
+.report-link:hover {
+    color: #ffeb3b; /* Change color on hover */
+}
+
+
+
+

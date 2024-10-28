@@ -73,6 +73,13 @@
         d="M102,67.1c-9.6-6.1-22-3.1-29.5,2-15.4,10.7-19.6,37.5-7.6,47.8s35.9,3.9,44.5-12.5C115.5,92.6,113.9,74.6,102,67.1Z"
       />
     </svg>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </nav>
+    </header>
 
     <section class="section section1">
       <div>
@@ -109,12 +116,7 @@
         <a href="/playlistBlend" class="button">Try it now!</a>
       </div>
     </section>
-    <div class="scroll-indicator" id="scroll-indicator">
-      <i class="fas fa-angle-down"></i>
-    </div>
-    <div class="progress-bar-container">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
+    
 
     <script >
       document.addEventListener("DOMContentLoaded", () => {
@@ -156,48 +158,7 @@
   // Observe each section
   sections.forEach((section) => {
     observer.observe(section);
-  });
-
-  // Handle music note effect on hover over heading
-  heading.addEventListener("mouseenter", (e) => {
-    if (noteCounter < maxNotes && canSpawnNote) {
-      const note = document.createElement("div");
-      note.className = "music-note";
-      note.innerHTML = "&#9835;";
-      note.style.left = `${e.clientX}px`;
-      note.style.top = `${e.clientY}px`;
-      document.body.appendChild(note);
-      noteCounter++;
-      canSpawnNote = false; // Prevent new notes from spawning immediately
-
-      // Re-enable spawning after the cooldown period
-      setTimeout(() => {
-        canSpawnNote = true;
-      }, spawnCooldown);
-
-      note.addEventListener("animationend", () => {
-        note.remove();
-        noteCounter--;
-      });
-    }
-  });
-      
-        // Smooth scrolling to the next section on scroll
-        window.addEventListener("wheel", (e) => {
-          if (e.deltaY > 0) {
-            // Scroll down
-            if (currentSectionIndex < sections.length - 1) {
-              currentSectionIndex++;
-            }
-          } else {
-            // Scroll up
-            if (currentSectionIndex > 0) {
-              currentSectionIndex--;
-            }
-          }
-          sections[currentSectionIndex].scrollIntoView({ behavior: "smooth" });
-        });
-      
+  }); 
         // Add scroll event listener
         window.addEventListener("scroll", () => {
           sections.forEach((section, index) => {
@@ -208,27 +169,7 @@
               }
             }
           });
-          window.addEventListener("scroll", () => {
-            const scrollHeight =
-              document.documentElement.scrollHeight - window.innerHeight;
-            const scrollTop = window.scrollY;
-            const scrollPercent = (scrollTop / scrollHeight) * 100;
-      
-            progressBar.style.width = `${scrollPercent}%`; // Adjust width for horizontal bar
-          });
-      
-          // Update progress bar height
-          const scrollPercentage =
-            (window.scrollY / (document.body.scrollHeight - window.innerHeight)) *
-            100;
-          progressBar.style.height = `${scrollPercentage}%`;
-      
-          // Check if the user has reached the bottom of the page
-          if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-            scrollIndicator.style.display = "none";
-          } else {
-            scrollIndicator.style.display = "block";
-          }
+
         });
       });
       
