@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import random as rd
 
 load_dotenv()
-app=Flask(__name__,template_folder='Templates')
+app=Flask(__name__,static_folder='static',template_folder='Templates')
 
 app.config["SECRET_KEY"]=os.getenv("Secret_key")
 
