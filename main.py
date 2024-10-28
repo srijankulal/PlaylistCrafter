@@ -14,11 +14,9 @@ app.config["SECRET_KEY"]=os.getenv("Secret_key")
 
 client_id=os.getenv("Client_ID")
 client_secret=os.getenv("Client_SECRET")
-redirect_url1="http://127.0.0.1:5000/callback"
-redirect_url2="http://qc1hlnwn-5000.inc1.devtunnels.ms//callback"
 redirect_url="https://playlistcrafter.vercel.app/callback"
 scope = 'user-read-recently-played user-top-read user-library-read playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email playlist-read-collaborative'
-
+#Permission of user (scope)
 cache_handler = FlaskSessionCacheHandler(session)#to store the token in flask
 sp_oauth=SpotifyOAuth(
     client_id=client_id,
