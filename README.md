@@ -1,4 +1,4 @@
-
+# Playlist Crafter
 
 PlaylistCrafter is a web application that leverages the Spotify API to help users discover new music and create customized playlists.
 
